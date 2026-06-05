@@ -1605,3 +1605,56 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+.tokenVisual {
+  position: relative;
+  overflow: hidden;
+}
+
+.productFlowGrid .tokenVisual > img {
+  filter: saturate(0.92) brightness(0.78);
+}
+
+.tokenAccessPanel {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  display: grid;
+  width: min(46%, 178px);
+  gap: 8px;
+  border: 1px solid rgba(183, 249, 255, 0.38);
+  border-radius: 8px;
+  background: rgba(4, 29, 31, 0.86);
+  box-shadow: 0 20px 52px rgba(0, 18, 24, 0.48);
+  padding: 12px;
+  backdrop-filter: blur(18px);
+}
+
+.tokenAccessPanel strong {
+  color: var(--aqua);
+  font-size: 0.92rem;
+  text-transform: uppercase;
+}
+
+.tokenAccessPanel img {
+  width: 94px;
+  height: 94px;
+  aspect-ratio: 1;
+  border: 5px solid white;
+  border-radius: 8px;
+  background: white;
+  object-fit: contain;
+}
+
+.tokenAccessPanel code {
+  color: var(--ink);
+  font-size: 0.72rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .tokenAccessPanel {
+    width: 180px;
+  }
+}
