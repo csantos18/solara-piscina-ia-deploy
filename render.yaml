@@ -1,0 +1,10 @@
+﻿services:
+  - type: web
+    name: solara-piscina-ia
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: ENABLE_REAL_IMAGE_GENERATION
+        value: "0"

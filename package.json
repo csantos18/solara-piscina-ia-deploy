@@ -1,0 +1,10 @@
+﻿{
+    "name":  "solara-piscina-ia-app",
+    "version":  "1.0.0",
+    "private":  true,
+    "type":  "module",
+    "scripts":  {
+                    "start":  "node server.mjs",
+                    "check":  "node --check server.mjs \u0026\u0026 node --check public/app.js \u0026\u0026 node --check src/tokens.js \u0026\u0026 node --check src/image-generation-config.js"
+                }
+}
