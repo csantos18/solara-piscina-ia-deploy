@@ -11,7 +11,7 @@ Versao publica enxuta da demo Solara Piscina IA, preparada para Render Free Web 
 
 Token admin demo atual: `solara-admin-2026`.
 
-## Arquivos principais
+## Documentacao`r`n`r`n- `PRD_SOLARA_PISCINA_IA.md` - requisitos, escopo, status, limites e proximos passos do produto.`r`n`r`n## Arquivos principais
 
 - `public/index.html` - landing page por token focada em desejo, imagens e pedido de orcamento.
 - `public/admin.html` - painel comercial protegido por token.
@@ -68,3 +68,4 @@ No PowerShell, se `npm` for bloqueado por politica de script:
 ```bash
 npm.cmd run check
 ```
+

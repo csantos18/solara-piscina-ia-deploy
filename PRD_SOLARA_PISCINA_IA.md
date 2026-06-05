@@ -1,0 +1,184 @@
+﻿# PRD - Solara Piscina IA
+
+## 1. Visao geral
+
+Solara Piscina IA e uma experiencia comercial por token para venda de piscinas. O cliente recebe um link ou QR Code, visualiza pre-imagens do projeto, entende o antes/depois do terreno e envia fotos, medidas e preferencias para iniciar um orcamento mais qualificado.
+
+A versao atual e uma demo funcional publicada em Render Free, com landing publica, painel administrativo basico, captura de leads, upload de fotos, catalogo inicial de upsell e endpoint de IA em modo dry-run.
+
+## 2. Objetivo do produto
+
+Aumentar conversao comercial ao transformar uma abordagem fria de orcamento em uma experiencia visual premium antes da primeira conversa com vendedor.
+
+Objetivos principais:
+
+- gerar desejo visual pela piscina;
+- personalizar a experiencia por token do prospect;
+- coletar dados suficientes para orientar o orcamento;
+- preparar a evolucao para simulacao real por IA;
+- permitir que vendedor/coordenador acompanhe leads e oportunidades;
+- abrir caminho para upsell depois do orcamento principal.
+
+## 3. Publico-alvo
+
+- Clientes interessados em construir piscina residencial.
+- Vendedores que precisam qualificar leads antes de contato direto.
+- Coordenadores comerciais que precisam acompanhar demonstracoes, leads e status do funil.
+
+## 4. Escopo implementado
+
+### 4.1 Landing por token
+
+- Token principal: `/000000`.
+- Token secundario: `/111111`.
+- Conteudo visual muda por token.
+- Hero premium com imagem de piscina.
+- Galeria de pre-imagens.
+- Comparativo antes/depois com imagem de satelite.
+- QR Code apontando para a pagina do token.
+- Secao de fluxo comercial usando imagens do video/demo.
+
+### 4.2 Formulario de orcamento
+
+Campos implementados:
+
+- nome;
+- WhatsApp;
+- email;
+- fotos do terreno;
+- largura disponivel;
+- comprimento disponivel;
+- tamanho desejado da piscina;
+- tipo de solo;
+- estilo desejado;
+- formato preferido;
+- profundidade ou uso principal;
+- area disponivel aproximada;
+- preferencia de revestimento;
+- deck e entorno;
+- objetivo visual;
+- local/regiao opcional;
+- preferencia principal opcional.
+
+### 4.3 Painel administrativo
+
+Rota:
+
+```text
+/admin
+```
+
+Funcionalidades:
+
+- acesso por token administrativo;
+- total de leads;
+- leads com fotos;
+- fotos salvas;
+- modo da IA;
+- tokens conhecidos;
+- observacao de storage;
+- listagem de leads;
+- dados comerciais do lead;
+- metadados de fotos enviadas.
+
+### 4.4 Catalogo de upsell
+
+Funcionalidades:
+
+- cadastro simples de produto complementar no painel admin;
+- listagem de produtos no painel;
+- API publica de catalogo preview em `/api/products`.
+
+Produtos iniciais:
+
+- Deck premium atermico;
+- Moveis externos;
+- Painel solar futuro.
+
+### 4.5 IA visual
+
+Implementado:
+
+- prompts rastreaveis em `src/tokens.js`;
+- configuracao LiteLLM em `src/image-generation-config.js`;
+- endpoint `/api/image-generation/request`;
+- modo dry-run por padrao.
+
+Nao implementado por padrao:
+
+- chamada real de geracao de imagem;
+- consumo automatico de API;
+- cobranca por geracao.
+
+## 5. Links atuais
+
+- Demo principal: `https://solara-piscina-ia.onrender.com/000000`
+- Demo secundaria: `https://solara-piscina-ia.onrender.com/111111`
+- Painel admin: `https://solara-piscina-ia.onrender.com/admin`
+- Catalogo publico: `https://solara-piscina-ia.onrender.com/api/products`
+- Repo publico deploy-only: `https://github.com/csantos18/solara-piscina-ia-deploy`
+- Repo privado completo: `https://github.com/csantos18/solara-piscina-ia`
+
+Token admin demo atual:
+
+```text
+solara-admin-2026
+```
+
+## 6. Requisitos funcionais
+
+| ID | Requisito | Status |
+| --- | --- | --- |
+| RF-01 | Abrir landing pelo token `000000` | Implementado |
+| RF-02 | Abrir landing alternativa pelo token `111111` | Implementado |
+| RF-03 | Exibir galeria de pre-imagens | Implementado |
+| RF-04 | Exibir antes/depois do terreno | Implementado |
+| RF-05 | Gerar QR Code do token | Implementado |
+| RF-06 | Coletar dados de contato | Implementado |
+| RF-07 | Coletar fotos do terreno | Implementado |
+| RF-08 | Coletar medidas e preferencias | Implementado |
+| RF-09 | Salvar lead no servidor | Implementado em arquivo local |
+| RF-10 | Exibir leads em painel admin | Implementado |
+| RF-11 | Exibir metadados das fotos no admin | Implementado |
+| RF-12 | Cadastrar produtos de upsell | Implementado |
+| RF-13 | Expor catalogo publico de upsell | Implementado |
+| RF-14 | Gerar payload de IA em dry-run | Implementado |
+| RF-15 | Gerar imagem real por IA | Preparado, nao ativado |
+
+## 7. Requisitos nao funcionais
+
+- A experiencia deve parecer premium, visual e comercial.
+- O primeiro acesso pode ser mais lento no Render Free.
+- O projeto nao deve prometer producao final sem banco, storage e autenticacao robusta.
+- O codigo deve rodar sem dependencias externas obrigatorias alem do Node.
+- O deploy publico nao deve incluir docs sensiveis, pitch interno ou contexto completo do coordenador.
+
+## 8. Fora do escopo atual
+
+- CRM completo.
+- Pagamento online.
+- Login administrativo profissional.
+- Banco de dados definitivo.
+- Storage externo definitivo para fotos.
+- Garantia operacional de obra em 30 dias.
+- Automacao real de busca de endereco.
+- Geracao real de imagem ativada por padrao.
+
+## 9. Riscos e limitacoes
+
+- Render Free pode hibernar e causar demora no primeiro acesso.
+- Filesystem do Render Free nao deve ser tratado como armazenamento permanente.
+- Token admin simples serve para demo, nao para producao.
+- Fotos e leads precisam migrar para banco/storage antes de uso real.
+- Premissas comerciais, como prazo de 30 dias, precisam validacao da empresa.
+
+## 10. Proximos passos recomendados
+
+1. Gravar video curto para coordenador mostrando demo, admin e upsell.
+2. Validar se a narrativa comercial esta aprovada.
+3. Definir se a IA real sera ativada e com qual custo/limite.
+4. Conectar banco de dados para leads e produtos.
+5. Conectar storage externo para fotos.
+6. Substituir token simples por login administrativo.
+7. Criar status comercial do lead: novo, em analise, orcado, fechado, perdido.
+8. Avaliar dominio proprio e plano pago para apresentacao mais estavel.
