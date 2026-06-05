@@ -107,39 +107,50 @@
       <section class="productFlowBand" id="fluxo-produto">
         <div class="sectionHead">
           <p class="kicker">Produto comercial</p>
-          <h2>O link por token transforma imagem em conversa de orçamento.</h2>
-          <p>As telas abaixo mostram como a experiência sai de uma primeira impressão premium, passa pelo QR Code no celular e chega ao pedido de simulação com dados do cliente.</p>
+          <h2>Do quintal atual à conversa de orçamento.</h2>
+          <p>O fluxo começa com o espaço real do cliente, libera uma página exclusiva por token e conduz para uma simulação visual antes do orçamento.</p>
         </div>
         <div class="productFlowGrid">
           <article>
-            <img src="/images/solara-video-abertura-premium.jpg" alt="Abertura visual premium da experiência Solara Piscina IA">
+                        <div class="flowCompare" data-flow-compare>
+              <img class="flowCompareImage result" src="/images/satellite-pool-after.jpeg" alt="Piscina pronta simulada no terreno">
+              <div class="flowCompareBefore" data-flow-before>
+                <img class="flowCompareImage before" src="/images/satellite-original.png" alt="Terreno vazio antes da simulação da piscina">
+              </div>
+              <input class="flowCompareRange" data-flow-range type="range" min="8" max="92" value="52" aria-label="Comparar terreno atual e piscina pronta">
+              <div class="flowCompareHandle" data-flow-handle><span></span></div>
+              <strong class="flowCompareTag beforeTag">Antes</strong>
+              <strong class="flowCompareTag resultTag">Depois</strong>
+            </div>
             <div>
               <span>01</span>
-              <h3>Primeira impressão premium</h3>
-              <p>A imagem inicial cria desejo antes da conversa comercial e posiciona a piscina como transformação visual do espaço.</p>
+              <h3>Seu espaço atual</h3>
+              <p>Envie fotos do seu quintal ou terreno para iniciar uma simulação visual mais próxima do espaço real.</p>
             </div>
           </article>
-          <article class="tokenFlowCard">
-            <div class="tokenVisual">
-              <img src="/images/solara-video-landing-token.jpg" alt="Celular mostrando landing por token com QR Code da Solara Piscina IA">
-              <aside class="tokenAccessPanel" aria-label="Acesso exclusivo por token">
-                <strong>Token 000000</strong>
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fsolara-piscina-ia.onrender.com%2F000000" alt="QR Code do token 000000">
-                <code>solara-piscina-ia.onrender.com/000000</code>
+          <article class="aiFlowCard">
+            <div class="aiProcessingVisual">
+              <img src="/images/solara-video-landing-token.jpg" alt="Celular com fotos do projeto sendo analisadas pela Solara Piscina IA">
+              <aside class="aiProcessingPanel" aria-label="Processamento IA em andamento">
+                <strong>IA em preparação</strong>
+                <span class="aiProgress"><i></i></span>
+                <em>Analisando medidas...</em>
+                <em>Gerando opções...</em>
+                <em>Calculando área...</em>
               </aside>
             </div>
             <div>
               <span>02</span>
-              <h3>Acesso exclusivo do cliente</h3>
-              <p>O prospect entra por token ou QR Code em uma página própria, rastreável e preparada para receber fotos, medidas e preferências.</p>
+              <h3>IA preparando o projeto</h3>
+              <p>Fotos, medidas e preferências organizam o briefing visual. A geração real fica controlada até aprovação comercial.</p>
             </div>
           </article>
-          <article>
-            <img src="/images/solara-video-produto-digital.jpg" alt="Produto digital Solara Piscina IA para solicitar simulação">
+          <article class="resultFlowCard">
+            <img src="/images/satellite-pool-after.jpeg" alt="Resultado visual com piscina simulada no terreno do cliente">
             <div>
               <span>03</span>
-              <h3>Simulação antes do orçamento</h3>
-              <p>Fotos, medidas e preferências alimentam a próxima etapa comercial, mantendo IA real em modo controlado até aprovação.</p>
+              <h3>Resultado visual do projeto</h3>
+              <p>Piscina renderizada, antes/depois e proposta visual ajudam o cliente a avançar para o orçamento com mais segurança.</p>
             </div>
           </article>
         </div>
@@ -448,6 +459,12 @@
     <script type="module" src="/app.js"></script>
   </body>
 </html>
+
+
+
+
+
+
 
 
 

@@ -135,3 +135,18 @@ leadForm.addEventListener("submit", async (event) => {
   }
 });
 
+
+document.querySelectorAll("[data-flow-compare]").forEach((compare) => {
+  const range = compare.querySelector("[data-flow-range]");
+  const before = compare.querySelector("[data-flow-before]");
+  const handle = compare.querySelector("[data-flow-handle]");
+
+  function updateFlowCompare() {
+    const value = `${range.value}%`;
+    before.style.width = value;
+    handle.style.left = value;
+  }
+
+  range?.addEventListener("input", updateFlowCompare);
+  updateFlowCompare();
+});
