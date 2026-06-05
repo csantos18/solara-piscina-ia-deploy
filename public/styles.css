@@ -1921,3 +1921,149 @@ footer {
     min-width: 0;
   }
 }
+
+/* Interaction hierarchy for premium UX without layout shift. */
+.button {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  transform: translateY(-3px);
+  outline: none;
+}
+
+.button.primary:hover,
+.button.primary:focus-visible {
+  box-shadow: 0 26px 70px rgba(72, 234, 214, 0.36), 0 0 0 4px rgba(72, 234, 214, 0.14);
+}
+
+.button.ghost:hover,
+.button.ghost:focus-visible {
+  border-color: rgba(72, 234, 214, 0.62);
+  background: rgba(72, 234, 214, 0.15);
+  box-shadow: 0 20px 54px rgba(0, 24, 30, 0.32);
+}
+
+.shot {
+  position: relative;
+  transition: transform 260ms ease, box-shadow 260ms ease, border-color 260ms ease;
+}
+
+.shot::after {
+  content: "Ver projeto";
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  border: 1px solid rgba(183, 249, 255, 0.36);
+  border-radius: 999px;
+  background: rgba(4, 29, 31, 0.78);
+  color: var(--ink);
+  opacity: 0;
+  padding: 8px 11px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+  transform: translateY(-4px);
+  backdrop-filter: blur(12px);
+}
+
+.shot img {
+  transition: transform 300ms ease, filter 300ms ease;
+}
+
+.shot:hover,
+.shot:focus-within {
+  border-color: rgba(72, 234, 214, 0.7);
+  box-shadow: 0 36px 110px rgba(0, 30, 38, 0.58);
+  transform: translateY(-8px);
+}
+
+.shot:hover img,
+.shot:focus-within img {
+  filter: saturate(1.12) contrast(1.05) brightness(1.04);
+  transform: scale(1.08);
+}
+
+.shot:hover::after,
+.shot:focus-within::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.process article,
+.valueItem,
+.futureGrid article,
+.adminStats article,
+.productCard,
+.leadCard {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.process article:hover,
+.process article:focus-within,
+.valueItem:hover,
+.valueItem:focus-within,
+.futureGrid article:hover,
+.futureGrid article:focus-within,
+.adminStats article:hover,
+.adminStats article:focus-within,
+.productCard:hover,
+.productCard:focus-within,
+.leadCard:hover,
+.leadCard:focus-within {
+  border-color: rgba(72, 234, 214, 0.42);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 62px rgba(0, 24, 30, 0.34);
+  transform: translateY(-3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .shot,
+  .shot img,
+  .productFlowGrid article,
+  .productFlowGrid article img,
+  .process article,
+  .valueItem,
+  .futureGrid article,
+  .adminStats article,
+  .productCard,
+  .leadCard {
+    transition: none;
+  }
+
+  .button:hover,
+  .button:focus-visible,
+  .shot:hover,
+  .shot:focus-within,
+  .productFlowGrid article:hover,
+  .productFlowGrid article:focus-within,
+  .process article:hover,
+  .process article:focus-within,
+  .valueItem:hover,
+  .valueItem:focus-within,
+  .futureGrid article:hover,
+  .futureGrid article:focus-within,
+  .adminStats article:hover,
+  .adminStats article:focus-within,
+  .productCard:hover,
+  .productCard:focus-within,
+  .leadCard:hover,
+  .leadCard:focus-within {
+    transform: none;
+  }
+
+  .shot:hover img,
+  .shot:focus-within img,
+  .productFlowGrid article:hover > img,
+  .productFlowGrid article:focus-within > img,
+  .productFlowGrid article:hover .tokenVisual > img,
+  .productFlowGrid article:focus-within .tokenVisual > img,
+  .productFlowGrid article:hover .aiProcessingVisual > img,
+  .productFlowGrid article:focus-within .aiProcessingVisual > img {
+    transform: none;
+  }
+}
