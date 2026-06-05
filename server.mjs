@@ -12,6 +12,32 @@ const publicDir = join(root, "public");
 const port = Number(process.env.PORT || 4173);
 const maxLeadPhotoBytes = Number(process.env.MAX_LEAD_PHOTO_BYTES || 10 * 1024 * 1024);
 const maxLeadPhotos = Number(process.env.MAX_LEAD_PHOTOS || 6);
+const defaultUpsellProducts = [
+  {
+    id: "deck-premium",
+    name: "Deck premium atérmico",
+    category: "Acabamento",
+    priceNote: "Sob orçamento",
+    status: "ativo",
+    description: "Complemento para área de circulação ao redor da piscina."
+  },
+  {
+    id: "moveis-externos",
+    name: "Móveis externos",
+    category: "Pós-orçamento",
+    priceNote: "A definir",
+    status: "planejado",
+    description: "Linha de espreguiçadeiras, mesas e apoio para etapa posterior à venda da piscina."
+  },
+  {
+    id: "painel-solar",
+    name: "Painel solar futuro",
+    category: "Energia",
+    priceNote: "A definir",
+    status: "planejado",
+    description: "Produto complementar para proposta futura, sem tirar foco do orçamento da piscina."
+  }
+];
 const rotasReservadas = new Set([
   "/rota-reservada-1",
   "/rota-reservada-2",
@@ -116,9 +142,9 @@ async function serveFile(req, res) {
   }
 
   const isKnownTokenPath = Object.hasOwn(TOKENS, rawPath.slice(1));
-  const requestedPath = rawPath === "/" || isKnownTokenPath ? "/index.html" : rawPath;
+  const requestedPath = rawPath === "/" || isKnownTokenPath ? "/index.html" : rawPath === "/admin" ? "/admin.html" : rawPath;
 
-  if (/^\/[A-Za-z0-9_-]+$/.test(rawPath) && !isKnownTokenPath) {
+  if (/^\/[A-Za-z0-9_-]+$/.test(rawPath) && !isKnownTokenPath && rawPath !== "/admin") {
     res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
     res.end("Token não encontrado. Use /000000 para a demo principal.");
     return;
@@ -245,9 +271,197 @@ async function handleImageRequest(req, res) {
   });
 }
 
+function adminTokenFrom(req) {
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const headerToken = req.headers["x-admin-token"] || "";
+  const auth = req.headers.authorization || "";
+  const bearer = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  return String(headerToken || bearer || url.searchParams.get("token") || "").trim();
+}
+
+function requireAdmin(req, res) {
+  const expected = String(process.env.ADMIN_TOKEN || "solara-admin-2026").trim();
+  if (!expected) {
+    json(res, 503, { ok: false, error: "ADMIN_TOKEN nao configurado no ambiente." });
+    return false;
+  }
+  if (adminTokenFrom(req) !== expected) {
+    json(res, 401, { ok: false, error: "Token administrativo invalido." });
+    return false;
+  }
+  return true;
+}
+
+function leadPublicSummary(record, index) {
+  return {
+    id: `${record.receivedAt || "lead"}-${index + 1}`,
+    receivedAt: record.receivedAt || "",
+    token: record.token || "",
+    name: record.name || "",
+    phone: record.phone || "",
+    email: record.email || "",
+    address: record.address || "",
+    interest: record.interest || "",
+    availableArea: record.availableArea || "",
+    terrainWidth: record.terrainWidth || "",
+    terrainLength: record.terrainLength || "",
+    poolSize: record.poolSize || "",
+    soilType: record.soilType || "",
+    desiredStyle: record.desiredStyle || "",
+    depthPreference: record.depthPreference || "",
+    shapePreference: record.shapePreference || "",
+    coatingPreference: record.coatingPreference || "",
+    deckPreference: record.deckPreference || "",
+    visualGoal: record.visualGoal || "",
+    photoCount: Number(record.photoCount || 0),
+    photoFilesSaved: Number(record.photoFilesSaved || 0),
+    photos: Array.isArray(record.photos) ? record.photos.map((photo) => ({
+      name: photo.name || "foto-terreno",
+      type: photo.type || "",
+      size: Number(photo.size || 0),
+      stored: Boolean(photo.stored),
+      storageMode: photo.storageMode || "",
+      storedAs: photo.storedAs || "",
+      note: photo.note || "",
+      error: photo.error || ""
+    })) : []
+  };
+}
+
+async function readLeadRecords() {
+  let text = "";
+  try {
+    text = await readFile(join(root, "leads.jsonl"), "utf8");
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+
+  return text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      try {
+        return JSON.parse(line);
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
+}
+
+async function handleAdminLeads(req, res) {
+  if (!requireAdmin(req, res)) return;
+  const records = await readLeadRecords();
+  const leads = records.map(leadPublicSummary).reverse();
+  json(res, 200, {
+    ok: true,
+    generatedAt: new Date().toISOString(),
+    stats: {
+      totalLeads: leads.length,
+      leadsWithPhotos: leads.filter((lead) => lead.photoFilesSaved > 0).length,
+      totalPhotosSaved: leads.reduce((sum, lead) => sum + lead.photoFilesSaved, 0),
+      knownTokens: Object.keys(TOKENS),
+      imageGenerationMode: process.env.ENABLE_REAL_IMAGE_GENERATION === "1" ? "real" : "dry-run",
+      storageNote: "Plano gratuito usa filesystem efemero; para producao, conectar banco e storage externo."
+    },
+    leads
+  });
+}
+
+async function readUpsellProducts() {
+  try {
+    const text = await readFile(join(root, "upsell-products.json"), "utf8");
+    const products = JSON.parse(text);
+    return Array.isArray(products) ? products : defaultUpsellProducts;
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+    return defaultUpsellProducts;
+  }
+}
+
+async function writeUpsellProducts(products) {
+  await writeFile(join(root, "upsell-products.json"), JSON.stringify(products, null, 2), "utf8");
+}
+
+function normalizeProduct(body) {
+  const now = new Date().toISOString();
+  const id = safeUploadName(body.id || body.name || `produto-${Date.now()}`).toLowerCase();
+  return {
+    id,
+    name: String(body.name || "Produto sem nome").trim(),
+    category: String(body.category || "Complemento").trim(),
+    priceNote: String(body.priceNote || "Sob orçamento").trim(),
+    status: String(body.status || "planejado").trim(),
+    description: String(body.description || "").trim(),
+    updatedAt: now
+  };
+}
+
+async function handleAdminProducts(req, res) {
+  if (!requireAdmin(req, res)) return;
+  if (req.method === "GET") {
+    const products = await readUpsellProducts();
+    json(res, 200, { ok: true, products });
+    return;
+  }
+  if (req.method === "POST") {
+    const body = await parseBody(req);
+    const products = await readUpsellProducts();
+    const product = normalizeProduct(body);
+    const next = [product, ...products.filter((item) => item.id !== product.id)];
+    await writeUpsellProducts(next);
+    json(res, 201, { ok: true, product, products: next });
+    return;
+  }
+  res.writeHead(405);
+  res.end("Method not allowed");
+}
+
+async function handlePublicProducts(req, res) {
+  const products = await readUpsellProducts();
+  json(res, 200, {
+    ok: true,
+    mode: "catalog-preview",
+    note: "Catalogo complementar para etapa posterior ao orçamento da piscina.",
+    products: products.filter((product) => product.status !== "interno")
+  });
+}
+async function handleAdminPhoto(req, res) {
+  if (!requireAdmin(req, res)) return;
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const storedAs = String(url.searchParams.get("file") || "");
+  if (!storedAs.startsWith("lead-uploads/")) {
+    res.writeHead(400, { "content-type": "text/plain; charset=utf-8" });
+    res.end("Arquivo invalido.");
+    return;
+  }
+
+  const uploadsDir = join(root, "lead-uploads");
+  const filePath = normalize(join(root, storedAs));
+  if (!filePath.startsWith(uploadsDir)) {
+    res.writeHead(403, { "content-type": "text/plain; charset=utf-8" });
+    res.end("Forbidden");
+    return;
+  }
+
+  try {
+    const fileStat = await stat(filePath);
+    if (!fileStat.isFile()) throw new Error("Not a file");
+    res.writeHead(200, { "content-type": mime[extname(filePath)] || "application/octet-stream" });
+    createReadStream(filePath).pipe(res);
+  } catch {
+    res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
+    res.end("Foto nao encontrada neste ambiente.");
+  }
+}
 createServer(async (req, res) => {
   try {
     if (req.method === "POST" && req.url === "/api/leads") return handleLead(req, res);
+    if (req.method === "GET" && req.url.startsWith("/api/admin/leads")) return handleAdminLeads(req, res);
+    if (req.url.startsWith("/api/admin/products")) return handleAdminProducts(req, res);
+    if (req.method === "GET" && req.url.startsWith("/api/admin/photo")) return handleAdminPhoto(req, res);
+    if (req.method === "GET" && req.url.startsWith("/api/products")) return handlePublicProducts(req, res);
     if (req.method === "POST" && req.url === "/api/image-generation/request") return handleImageRequest(req, res);
     if (req.method === "GET") return serveFile(req, res);
     res.writeHead(405);
@@ -258,6 +472,10 @@ createServer(async (req, res) => {
 }).listen(port, () => {
   console.log(`Solara Piscina IA rodando em http://localhost:${port}/000000`);
 });
+
+
+
+
 
 
 

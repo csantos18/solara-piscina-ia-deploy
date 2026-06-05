@@ -1,0 +1,74 @@
+﻿<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Painel Admin - Solara Piscina IA</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body class="adminPage">
+    <header class="topbar adminTopbar">
+      <div>
+        <strong>Solara Admin</strong>
+        <span>Painel comercial</span>
+      </div>
+      <nav aria-label="Links administrativos">
+        <a href="/000000">Demo 000000</a>
+        <a href="/111111">Demo 111111</a>
+      </nav>
+    </header>
+
+    <main class="adminShell">
+      <section class="adminHero">
+        <div>
+          <p class="kicker">Operação</p>
+          <h1>Leads, fotos e status da demo.</h1>
+          <p>Área protegida para o vendedor ou coordenador acompanhar os contatos recebidos pela landing.</p>
+        </div>
+        <form id="adminLogin" class="adminLogin">
+          <label>
+            Token administrativo
+            <input id="adminToken" type="password" autocomplete="current-password" placeholder="Informe o ADMIN_TOKEN">
+          </label>
+          <button class="button primary" type="submit">Entrar no painel</button>
+          <p id="adminStatus" class="formStatus" role="status"></p>
+        </form>
+      </section>
+
+      <section class="adminStats" id="adminStats" aria-label="Status do ambiente"></section>
+
+      <section class="adminContent productsContent">
+        <div class="sectionHead">
+          <p class="kicker">Cadastro de upsell</p>
+          <h2>Produtos complementares</h2>
+          <p>Catálogo simples para móveis externos, painel solar e complementos depois do orçamento da piscina.</p>
+        </div>
+        <form id="productForm" class="productForm">
+          <div class="formGrid two">
+            <label>Nome do produto<input name="name" required placeholder="Ex.: Móveis externos premium"></label>
+            <label>Categoria<input name="category" placeholder="Ex.: Pós-orçamento"></label>
+          </div>
+          <div class="formGrid two">
+            <label>Status<select name="status"><option>planejado</option><option>ativo</option><option>interno</option></select></label>
+            <label>Preço/observação<input name="priceNote" placeholder="Sob orçamento"></label>
+          </div>
+          <label>Descrição<textarea name="description" rows="3" placeholder="Como esse complemento entra depois do orçamento"></textarea></label>
+          <button class="button primary" type="submit">Salvar produto</button>
+        </form>
+        <div id="productsList" class="productsList"></div>
+      </section>
+
+      <section class="adminContent">
+        <div class="sectionHead">
+          <p class="kicker">Leads recebidos</p>
+          <h2>Fila comercial</h2>
+          <p>Os registros aparecem aqui quando alguém envia o formulário da landing.</p>
+        </div>
+        <div id="leadsList" class="leadsList"></div>
+      </section>
+    </main>
+
+    <script type="module" src="/admin.js"></script>
+  </body>
+</html>
+

@@ -1215,3 +1215,197 @@ footer {
   transform: translateY(-1px);
   outline: none;
 }
+
+.adminPage {
+  background: linear-gradient(180deg, #071f20, #092d2c 48%, #061918);
+}
+
+.adminShell {
+  padding: 104px clamp(18px, 6vw, 82px) 64px;
+}
+
+.adminHero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: clamp(24px, 5vw, 64px);
+  align-items: end;
+  min-height: 420px;
+}
+
+.adminHero h1 {
+  max-width: 840px;
+  font-size: clamp(2.4rem, 5vw, 4.6rem);
+}
+
+.adminHero p:not(.kicker) {
+  max-width: 620px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.adminLogin,
+.productForm,
+.leadCard,
+.productCard,
+.emptyState,
+.adminStats article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--glass);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.adminLogin,
+.productForm {
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+}
+
+.adminStats {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  margin: 30px 0 54px;
+}
+
+.adminStats article {
+  min-height: 112px;
+  padding: 18px;
+}
+
+.adminStats span,
+.leadGrid span,
+.productCard span,
+.photoPanel span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.adminStats strong {
+  display: block;
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+  font-size: 1.18rem;
+}
+
+.adminContent {
+  margin-top: 42px;
+}
+
+.leadsList,
+.productsList {
+  display: grid;
+  gap: 16px;
+}
+
+.leadCard {
+  display: grid;
+  gap: 18px;
+  padding: 22px;
+}
+
+.leadCardHead {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 14px;
+}
+
+.leadCardHead span {
+  color: var(--muted);
+}
+
+.leadCardHead h3 {
+  margin: 6px 0 0;
+  font-size: 1.35rem;
+}
+
+.leadCardHead > strong {
+  color: var(--aqua);
+}
+
+.leadGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.leadGrid div,
+.photoPanel,
+.productCard {
+  border: 1px solid rgba(179, 244, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.055);
+  padding: 14px;
+}
+
+.leadGrid strong {
+  display: block;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
+.photoPanel ul {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.photoPanel li {
+  display: grid;
+  gap: 4px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.photoPanel code {
+  overflow-wrap: anywhere;
+  font-size: 0.78rem;
+}
+
+.photoPanel em {
+  color: var(--sun);
+  font-style: normal;
+}
+
+.productCard {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: start;
+}
+
+.productCard p {
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.productCard > strong {
+  color: var(--sun);
+  white-space: nowrap;
+}
+
+.emptyState {
+  color: var(--muted);
+  padding: 22px;
+}
+
+@media (max-width: 920px) {
+  .adminHero,
+  .adminStats,
+  .leadGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .productCard,
+  .leadCardHead {
+    flex-direction: column;
+  }
+}
