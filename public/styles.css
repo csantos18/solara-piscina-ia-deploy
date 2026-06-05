@@ -1409,3 +1409,138 @@ footer {
     flex-direction: column;
   }
 }
+
+/* Admin refinement: denser operational layout for repeated use. */
+.adminShell {
+  padding-top: 86px;
+}
+
+.adminHero {
+  min-height: auto;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 376px);
+  gap: clamp(20px, 4vw, 48px);
+  align-items: center;
+  padding: 30px 0 10px;
+}
+
+.adminHero h1 {
+  margin-bottom: 10px;
+  font-size: clamp(2.15rem, 4.2vw, 3.7rem);
+  line-height: 0.98;
+}
+
+.adminHero p:not(.kicker) {
+  max-width: 720px;
+  margin-bottom: 0;
+  font-size: 0.98rem;
+}
+
+.adminLogin {
+  gap: 12px;
+  padding: 18px;
+}
+
+.adminLogin input {
+  min-height: 42px;
+}
+
+.adminLogin .button {
+  min-height: 44px;
+}
+
+.adminStats {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0 36px;
+}
+
+.adminStats article {
+  min-height: 92px;
+  padding: 14px 15px;
+}
+
+.adminStats span {
+  font-size: 0.72rem;
+}
+
+.adminStats strong {
+  margin-top: 8px;
+  font-size: 1.02rem;
+  line-height: 1.25;
+}
+
+.adminStats article:last-child strong {
+  font-size: 0.86rem;
+  line-height: 1.32;
+}
+
+.adminContent {
+  margin-top: 32px;
+}
+
+.productsContent {
+  display: grid;
+  grid-template-columns: minmax(280px, 420px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.productsContent .sectionHead {
+  grid-column: 1 / -1;
+  margin-bottom: 4px;
+}
+
+.productsContent .sectionHead h2,
+.adminContent .sectionHead h2 {
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+}
+
+.productForm {
+  position: sticky;
+  top: 88px;
+  padding: 18px;
+}
+
+.productsList {
+  gap: 12px;
+}
+
+.productCard {
+  padding: 16px;
+}
+
+.leadCard {
+  padding: 18px;
+}
+
+.emptyState {
+  padding: 18px;
+}
+
+@media (max-width: 1100px) {
+  .adminStats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .productsContent {
+    grid-template-columns: 1fr;
+  }
+
+  .productForm {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .adminShell {
+    padding-top: 82px;
+  }
+
+  .adminHero {
+    padding-top: 18px;
+  }
+
+  .adminStats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
