@@ -12,6 +12,9 @@ Versao publica enxuta da demo Solara Piscina IA, preparada para Render Free Web 
 ## Documentacao
 
 - `PRD_SOLARA_PISCINA_IA.md` - requisitos, escopo, status, limites e proximos passos do produto.
+- `docs/pitch-coordenador.md` - pitch executivo para aprovacao do piloto.
+- `docs/checklist-aprovacao-premium.md` - checklist tecnico-comercial da aprovacao.
+- `docs/roteiro-demo-5-minutos.md` - roteiro objetivo para demonstracao ao coordenador.
 
 ## Arquivos principais
 
@@ -85,5 +88,6 @@ http://localhost:4173/admin
 ```bash
 npm.cmd run check
 ```
+
 
 
