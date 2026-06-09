@@ -99,8 +99,8 @@ export const TOKENS = {
     buildTimeClaim: "Prazo comercial de 30 dias precisa de confirmação antes da proposta final",
     priceRange: "Orçamento sob análise do terreno",
     qrTarget: "/111111",
-    heroImage: "/images/pool-3d.jpeg",
-    heroPromptKey: "pool3d",
+    heroImage: "/images/pool-project.jpeg",
+    heroPromptKey: "poolDream",
     imageSourcePackage: "contexto-devs-piscinas-ia.rar recebido em 28/05/2026",
     images: withDescriptions([
       baseImages[1],
@@ -126,5 +126,6 @@ export const TOKENS = {
     }
   }
 };
+
 
 

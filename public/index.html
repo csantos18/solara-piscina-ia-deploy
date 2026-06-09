@@ -24,7 +24,7 @@
         <img id="mainVisual" alt="Simulação visual da piscina inserida no terreno do cliente" src="/images/pool-project.jpeg">
         <div class="heroOverlay"></div>
         <div class="heroContent">
-          <p class="eyebrow">Landing visual por token /000000</p>
+          <p class="eyebrow" id="heroEyebrow">Landing visual por token /000000</p>
           <h1>Visualize sua piscina no terreno antes da primeira visita técnica</h1>
           <p>Pré-imagens premium mostram como o projeto pode ficar. Depois, fotos, medidas e preferências deixam a próxima simulação mais fiel ao espaço real.</p>
           <div class="heroActions">
@@ -37,16 +37,16 @@
             <a href="#orcamento">Orçamento personalizado</a>
           </nav>
         </div>
-        <aside class="heroPreview" aria-label="Prévia visual do token 000000">
+        <aside class="heroPreview" id="heroPreview" aria-label="Prévia visual do token 000000">
           <div class="previewTop">
-            <span>base_url/<strong>000000</strong></span>
-            <em>Projeto visual inicial</em>
+            <span>base_url/<strong id="previewToken">000000</strong></span>
+            <em id="previewStage">Projeto visual inicial</em>
           </div>
-          <img src="/images/satellite-pool-after.jpeg" alt="Piscina simulada no terreno do cliente">
+          <img id="previewMainImage" src="/images/pool-project.jpeg" alt="Prévia premium da piscina do token">
           <div class="previewThumbs" aria-label="Pré-imagens do token">
-            <img src="/images/pool-3d.jpeg" alt="Render arquitetônico da piscina">
-            <img src="/images/pool-top-view.jpeg" alt="Vista superior com deck e circulação">
-            <img src="/images/pool-project.jpeg" alt="Piscina premium pronta">
+            <img id="previewThumbOne" src="/images/pool-3d.jpeg" alt="Render arquitetônico da piscina">
+            <img id="previewThumbTwo" src="/images/pool-top-view.jpeg" alt="Vista superior com deck e circulação">
+            <img id="previewThumbThree" src="/images/satellite-pool-after.jpeg" alt="Piscina premium pronta">
           </div>
         </aside>
       </section>
@@ -106,37 +106,35 @@
 
       <section class="productFlowBand" id="fluxo-produto">
         <div class="sectionHead">
-          <p class="kicker">Produto comercial</p>
-          <h2>Do quintal atual à conversa de orçamento.</h2>
-          <p>O fluxo começa com o espaço real do cliente, libera uma página exclusiva por token e conduz para uma simulação visual antes do orçamento.</p>
+          <p class="kicker">Fluxo visual premium</p>
+          <h2>Da ideia ao projeto visual.</h2>
+          <p>Uma jornada guiada transforma estilo, fotos e medidas em uma primeira visão comercial para avançar com segurança até a visita técnica.</p>
         </div>
         <div class="productFlowGrid">
-          <article>
-                        <div class="flowCompare" data-flow-compare>
-              <img class="flowCompareImage result" src="/images/satellite-pool-after.jpeg" alt="Piscina pronta simulada no terreno">
-              <div class="flowCompareBefore" data-flow-before>
-                <img class="flowCompareImage before" src="/images/satellite-original.png" alt="Terreno vazio antes da simulação da piscina">
-              </div>
-              <input class="flowCompareRange" data-flow-range type="range" min="8" max="92" value="52" aria-label="Comparar terreno atual e piscina pronta">
-              <div class="flowCompareHandle" data-flow-handle><span></span></div>
-              <strong class="flowCompareTag beforeTag">Antes</strong>
-              <strong class="flowCompareTag resultTag">Depois</strong>
-            </div>
+          <article class="flowStepCard currentFlowCard">
+            <figure class="flowVisual cleanSatelliteVisual">
+              <img src="/images/satellite-original.png" alt="Vista superior limpa do espaço atual do cliente">
+              <figcaption>Espaço atual</figcaption>
+            </figure>
             <div>
               <span>01</span>
               <h3>Seu espaço atual</h3>
-              <p>Envie fotos do seu quintal ou terreno para iniciar uma simulação visual mais próxima do espaço real.</p>
+              <p>Fotos do quintal ou terreno entram como referência técnica, sem poluir a primeira leitura comercial.</p>
             </div>
           </article>
           <article class="aiFlowCard">
-            <div class="aiProcessingVisual">
-              <img src="/images/solara-video-landing-token.jpg" alt="Celular com fotos do projeto sendo analisadas pela Solara Piscina IA">
-              <aside class="aiProcessingPanel" aria-label="Processamento IA em andamento">
+            <div class="aiProcessingVisual" aria-label="Processamento IA em andamento">
+              <div class="aiSignalMap" aria-label="Insumos usados pela IA">
+                <span><small>Entrada</small>Fotos</span>
+                <span><small>Entrada</small>Medidas</span>
+                <span><small>Entrada</small>Estilo</span>
+              </div>
+              <aside class="aiProcessingPanel">
                 <strong>IA em preparação</strong>
                 <span class="aiProgress"><i></i></span>
-                <em>Analisando medidas...</em>
-                <em>Gerando opções...</em>
-                <em>Calculando área...</em>
+                <em><b></b>Analisando terreno</em>
+                <em><b></b>Organizando medidas</em>
+                <em><b></b>Preparando proposta visual</em>
               </aside>
             </div>
             <div>
@@ -146,11 +144,26 @@
             </div>
           </article>
           <article class="resultFlowCard">
-            <img src="/images/satellite-pool-after.jpeg" alt="Resultado visual com piscina simulada no terreno do cliente">
+            <figure class="flowVisual resultVisual">
+              <img src="/images/pool-project.jpeg" alt="Resultado visual premium com piscina pronta no projeto">
+              <figcaption>Projeto visual</figcaption>
+            </figure>
             <div>
               <span>03</span>
               <h3>Resultado visual do projeto</h3>
               <p>Piscina renderizada, antes/depois e proposta visual ajudam o cliente a avançar para o orçamento com mais segurança.</p>
+            </div>
+          </article>
+          <article class="visitFlowCard">
+            <figure class="flowVisual visitVisual">
+              <img src="/images/pool-solar-upsell.jpeg" alt="Área externa premium pronta para visita técnica">
+              <figcaption>Próximo passo</figcaption>
+            </figure>
+            <div>
+              <span>04</span>
+              <h3>Agende a visita técnica</h3>
+              <p>O time valida medidas, viabilidade e diferenciais estéticos antes da proposta final.</p>
+              <a class="button premiumGold" href="#orcamento">Agendar visita técnica</a>
             </div>
           </article>
         </div>
@@ -188,6 +201,11 @@
           <p class="kicker">Galeria personalizada por token</p>
           <h2>Uma primeira curadoria visual pensada para este cliente.</h2>
           <p>Cada token pode carregar imagens iniciais diferentes: borda infinita, deck, visual noturno, vista aérea ou outra direção de desejo. A sensação precisa ser: isso já foi pensado para mim.</p>
+        </div>
+        <div class="poolStyleSelector" aria-label="Escolha um estilo de piscina">
+          <button class="isActive" type="button" data-pool-style="familiar">Familiar</button>
+          <button type="button" data-pool-style="moderna">Moderna</button>
+          <button type="button" data-pool-style="prainha">Com prainha</button>
         </div>
         <div class="gallery" id="gallery"></div>
         <div class="galleryCta">
@@ -312,6 +330,13 @@
               </label>
             </div>
             <span class="uploadStatus" id="uploadStatus">Nenhuma foto selecionada.</span>
+            <div class="uploadPreview" id="uploadPreview" aria-live="polite"></div>
+            <div class="photoTips" aria-label="Ângulos recomendados para fotos do terreno">
+              <span>Frente do terreno</span>
+              <span>Canto esquerdo</span>
+              <span>Canto direito</span>
+              <span>Vista ampla</span>
+            </div>
           </div>
           <div class="formGrid two">
             <label>
@@ -459,6 +484,15 @@
     <script type="module" src="/app.js"></script>
   </body>
 </html>
+
+
+
+
+
+
+
+
+
 
 
 

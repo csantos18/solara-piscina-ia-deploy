@@ -16,6 +16,19 @@ function text(value, fallback = "-") {
   return String(value || "").trim() || fallback;
 }
 
+function escapeHtml(value) {
+  return text(value, "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function safe(value, fallback = "-") {
+  return escapeHtml(text(value, fallback));
+}
+
 function formatDate(value) {
   if (!value) return "-";
   try {
@@ -46,7 +59,7 @@ function renderStats(stats = {}) {
   ].map(([label, value]) => `
     <article>
       <span>${label}</span>
-      <strong>${value}</strong>
+      <strong>${safe(value)}</strong>
     </article>
   `).join("");
 }
@@ -55,11 +68,11 @@ function photoMarkup(photo, index) {
   const status = photo.stored ? "salva" : "não salva";
   return `
     <li>
-      <strong>${text(photo.name, `foto-${index + 1}`)}</strong>
-      <span>${status} · ${text(photo.type, "tipo indefinido")} · ${formatBytes(photo.size)}</span>
-      ${photo.storedAs ? `<code>${photo.storedAs}</code>` : ""}
-      ${photo.note ? `<em>${photo.note}</em>` : ""}
-      ${photo.error ? `<em>${photo.error}</em>` : ""}
+      <strong>${safe(photo.name, `foto-${index + 1}`)}</strong>
+      <span>${status} · ${safe(photo.type, "tipo indefinido")} · ${formatBytes(photo.size)}</span>
+      ${photo.storedAs ? `<code>${safe(photo.storedAs)}</code>` : ""}
+      ${photo.note ? `<em>${safe(photo.note)}</em>` : ""}
+      ${photo.error ? `<em>${safe(photo.error)}</em>` : ""}
     </li>
   `;
 }
@@ -70,21 +83,21 @@ function leadMarkup(lead) {
       <div class="leadCardHead">
         <div>
           <span>${formatDate(lead.receivedAt)}</span>
-          <h3>${text(lead.name, "Lead sem nome")}</h3>
+          <h3>${safe(lead.name, "Lead sem nome")}</h3>
         </div>
-        <strong>Token ${text(lead.token)}</strong>
+        <strong>Token ${safe(lead.token)}</strong>
       </div>
       <div class="leadGrid">
-        <div><span>WhatsApp</span><strong>${text(lead.phone)}</strong></div>
-        <div><span>Email</span><strong>${text(lead.email)}</strong></div>
-        <div><span>Local</span><strong>${text(lead.address)}</strong></div>
-        <div><span>Piscina</span><strong>${text(lead.poolSize)}</strong></div>
-        <div><span>Terreno</span><strong>${text([lead.terrainWidth, lead.terrainLength].filter(Boolean).join(" x "))}</strong></div>
-        <div><span>Estilo</span><strong>${text(lead.desiredStyle)}</strong></div>
-        <div><span>Formato</span><strong>${text(lead.shapePreference)}</strong></div>
-        <div><span>Revestimento</span><strong>${text(lead.coatingPreference)}</strong></div>
+        <div><span>WhatsApp</span><strong>${safe(lead.phone)}</strong></div>
+        <div><span>Email</span><strong>${safe(lead.email)}</strong></div>
+        <div><span>Local</span><strong>${safe(lead.address)}</strong></div>
+        <div><span>Piscina</span><strong>${safe(lead.poolSize)}</strong></div>
+        <div><span>Terreno</span><strong>${safe([lead.terrainWidth, lead.terrainLength].filter(Boolean).join(" x "))}</strong></div>
+        <div><span>Estilo</span><strong>${safe(lead.desiredStyle)}</strong></div>
+        <div><span>Formato</span><strong>${safe(lead.shapePreference)}</strong></div>
+        <div><span>Revestimento</span><strong>${safe(lead.coatingPreference)}</strong></div>
       </div>
-      <p>${text(lead.visualGoal, "Sem objetivo visual informado.")}</p>
+      <p>${safe(lead.visualGoal, "Sem objetivo visual informado.")}</p>
       <div class="photoPanel">
         <strong>Fotos enviadas: ${lead.photoFilesSaved || 0}/${lead.photoCount || 0}</strong>
         <ul>${lead.photos?.length ? lead.photos.map(photoMarkup).join("") : "<li><span>Nenhuma foto enviada.</span></li>"}</ul>
@@ -111,7 +124,7 @@ async function loadAdmin(token) {
     statusBox.textContent = `Atualizado em ${formatDate(result.generatedAt)}.`;
   } catch (error) {
     statsBox.innerHTML = "";
-    leadsList.innerHTML = `<div class="emptyState">${error.message}</div>`;
+    leadsList.innerHTML = `<div class="emptyState">${safe(error.message)}</div>`;
     statusBox.textContent = error.message;
   }
 }
@@ -125,11 +138,11 @@ function productMarkup(product) {
   return `
     <article class="productCard">
       <div>
-        <span>${text(product.category, "Complemento")} · ${text(product.status, "planejado")}</span>
-        <h3>${text(product.name, "Produto sem nome")}</h3>
-        <p>${text(product.description, "Sem descrição.")}</p>
+        <span>${safe(product.category, "Complemento")} · ${safe(product.status, "planejado")}</span>
+        <h3>${safe(product.name, "Produto sem nome")}</h3>
+        <p>${safe(product.description, "Sem descrição.")}</p>
       </div>
-      <strong>${text(product.priceNote, "Sob orçamento")}</strong>
+      <strong>${safe(product.priceNote, "Sob orçamento")}</strong>
     </article>
   `;
 }
@@ -168,3 +181,6 @@ productForm?.addEventListener("submit", async (event) => {
     statusBox.textContent = error.message;
   }
 });
+
+
+

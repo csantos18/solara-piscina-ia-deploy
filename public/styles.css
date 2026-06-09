@@ -88,7 +88,7 @@ a {
   padding: 104px clamp(18px, 7vw, 90px) 64px;
 }
 
-.hero img {
+#mainVisual {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -224,12 +224,11 @@ h3 {
   color: var(--aqua);
 }
 
-.heroPreview > img {
+#previewMainImage {
   position: static;
   display: block;
   width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 10;
+  height: clamp(260px, 34vw, 390px);
   object-fit: cover;
   filter: saturate(1.06) contrast(1.04);
 }
@@ -238,10 +237,10 @@ h3 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
-  padding: 10px;
+  padding: 0 10px 10px;
 }
 
-.previewThumbs img {
+.previewThumbs > img {
   position: static;
   width: 100%;
   height: auto;
@@ -902,7 +901,7 @@ footer {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .hero img {
+  #mainVisual {
     animation: heroSlowZoom 18s ease-in-out infinite alternate;
   }
 }
@@ -1554,7 +1553,7 @@ footer {
 
 .productFlowGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -1600,62 +1599,31 @@ footer {
   margin-bottom: 0;
 }
 
+.productFlowGrid .premiumGold {
+  width: 100%;
+  margin-top: 18px;
+  border-color: rgba(255, 212, 122, 0.72);
+  background: linear-gradient(135deg, #ffd47a, #b98431);
+  color: #072a2b;
+  box-shadow: 0 18px 34px rgba(255, 174, 69, 0.18);
+}
+
+.productFlowGrid .premiumGold:hover,
+.productFlowGrid .premiumGold:focus-visible {
+  border-color: rgba(255, 229, 164, 0.9);
+  background: linear-gradient(135deg, #ffe4a7, #c8913c);
+  color: #041c1d;
+}
+
 @media (max-width: 920px) {
   .productFlowGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-.tokenVisual {
-  position: relative;
-  overflow: hidden;
-}
-
-.productFlowGrid .tokenVisual > img {
-  filter: saturate(0.92) brightness(0.78);
-}
-
-.tokenAccessPanel {
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
-  display: grid;
-  width: min(46%, 178px);
-  gap: 8px;
-  border: 1px solid rgba(183, 249, 255, 0.38);
-  border-radius: 8px;
-  background: rgba(4, 29, 31, 0.86);
-  box-shadow: 0 20px 52px rgba(0, 18, 24, 0.48);
-  padding: 12px;
-  backdrop-filter: blur(18px);
-}
-
-.tokenAccessPanel strong {
-  color: var(--aqua);
-  font-size: 0.92rem;
-  text-transform: uppercase;
-}
-
-.tokenAccessPanel img {
-  width: 94px;
-  height: 94px;
-  aspect-ratio: 1;
-  border: 5px solid white;
-  border-radius: 8px;
-  background: white;
-  object-fit: contain;
-}
-
-.tokenAccessPanel code {
-  color: var(--ink);
-  font-size: 0.72rem;
-  line-height: 1.25;
-  overflow-wrap: anywhere;
-}
-
 @media (max-width: 640px) {
-  .tokenAccessPanel {
-    width: 180px;
+  .productFlowGrid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1728,30 +1696,6 @@ footer {
   margin-top: 10px;
   border-radius: 999px;
   background: linear-gradient(90deg, var(--aqua), var(--sun));
-}
-
-.productFlowGrid article {
-  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
-}
-
-.productFlowGrid article img {
-  transition: transform 220ms ease, filter 220ms ease;
-}
-
-.productFlowGrid article:hover,
-.productFlowGrid article:focus-within {
-  border-color: rgba(72, 234, 214, 0.58);
-  box-shadow: 0 30px 90px rgba(0, 34, 42, 0.54);
-  transform: translateY(-3px);
-}
-
-.productFlowGrid article:hover > img,
-.productFlowGrid article:focus-within > img,
-.productFlowGrid article:hover .tokenVisual > img,
-.productFlowGrid article:focus-within .tokenVisual > img,
-.productFlowGrid article:hover .aiProcessingVisual > img,
-.productFlowGrid article:focus-within .aiProcessingVisual > img {
-  transform: scale(1.025);
 }
 
 .productFlowGrid article {
@@ -2121,4 +2065,500 @@ footer {
 .aiFlowCard:hover .aiProcessingPanel em:nth-of-type(3) b,
 .aiFlowCard:focus-within .aiProcessingPanel em:nth-of-type(3) b {
   background: var(--sun);
+}
+
+
+
+
+/* Premium product flow refinement */
+.productFlowGrid article {
+  min-width: 0;
+}
+
+.flowVisual {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  margin: 0;
+  aspect-ratio: 16 / 10;
+  background: rgba(3, 20, 24, 0.58);
+}
+
+.productFlowGrid .flowVisual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: cover;
+  transform: none;
+}
+
+.cleanSatelliteVisual img {
+  object-position: center;
+  filter: saturate(0.78) contrast(0.98) brightness(0.76);
+}
+
+.resultVisual img {
+  object-position: center 58%;
+  filter: saturate(1.04) contrast(1.02) brightness(0.96);
+}
+
+.flowVisual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 48%, rgba(2, 18, 21, 0.72));
+  pointer-events: none;
+}
+
+.flowVisual figcaption {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 2;
+  border: 1px solid rgba(183, 249, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(3, 22, 25, 0.76);
+  color: var(--ink);
+  padding: 6px 10px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  backdrop-filter: blur(10px);
+}
+
+.productFlowGrid article:hover .flowVisual img,
+.productFlowGrid article:focus-within .flowVisual img {
+  transform: none;
+}
+
+.productFlowGrid article:hover,
+.productFlowGrid article:focus-within {
+  transform: translateY(-3px);
+}
+
+/* Premium AI flow card without external UI screenshots */
+.aiProcessingVisual {
+  display: grid;
+  min-height: 286px;
+  align-content: center;
+  gap: 18px;
+  padding: 22px;
+  background:
+    linear-gradient(135deg, rgba(72, 234, 214, 0.16), transparent 32%),
+    radial-gradient(circle at 82% 24%, rgba(255, 212, 122, 0.13), transparent 28%),
+    linear-gradient(180deg, rgba(4, 36, 38, 0.96), rgba(3, 22, 26, 0.98));
+}
+
+.aiProcessingVisual::before {
+  content: "";
+  position: absolute;
+  inset: 18px;
+  border: 1px solid rgba(183, 249, 255, 0.12);
+  border-radius: 8px;
+  background-image:
+    linear-gradient(rgba(183, 249, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(183, 249, 255, 0.06) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent 86%);
+  pointer-events: none;
+}
+
+.aiSignalMap {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.aiSignalMap span {
+  display: flex;
+  min-width: 0;
+  height: auto;
+  width: auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(183, 249, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--ink);
+  padding: 10px 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.aiProcessingVisual .aiProcessingPanel {
+  position: relative;
+  inset: auto;
+  z-index: 1;
+  min-height: 178px;
+  align-content: center;
+}
+
+/* AI input chips should read as status, not buttons */
+.aiSignalMap {
+  gap: 8px;
+  pointer-events: none;
+}
+
+.aiSignalMap span {
+  display: grid;
+  justify-items: start;
+  justify-content: stretch;
+  border-color: rgba(183, 249, 255, 0.12);
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(244, 255, 254, 0.92);
+  padding: 8px 10px;
+  cursor: default;
+}
+
+.aiSignalMap small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Premium aspiration and interaction polish */
+.heroContent {
+  max-width: min(740px, 100%);
+}
+
+h1 {
+  font-size: clamp(2.65rem, 5.1vw, 4.7rem);
+}
+
+.heroActions .button.primary {
+  min-width: min(100%, 318px);
+  border-color: rgba(183, 249, 255, 0.78);
+  box-shadow: 0 22px 70px rgba(72, 234, 214, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.34);
+}
+
+.heroActions .button.ghost {
+  color: rgba(244, 255, 254, 0.9);
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.button {
+  position: relative;
+  overflow: hidden;
+}
+
+.button.isLoading {
+  pointer-events: none;
+}
+
+.button.isLoading::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  margin-left: 10px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: solaraSpin 760ms linear infinite;
+}
+
+@keyframes solaraSpin {
+  to { transform: rotate(360deg); }
+}
+
+.shotMedia {
+  position: relative;
+  overflow: hidden;
+  padding: 0 !important;
+  background: rgba(2, 18, 21, 0.8);
+}
+
+.shotMedia::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(2, 18, 21, 0.62));
+  pointer-events: none;
+}
+
+.dreamMode {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  z-index: 2;
+  border: 1px solid rgba(183, 249, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(3, 22, 25, 0.72);
+  color: var(--ink);
+  padding: 6px 10px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  backdrop-filter: blur(10px);
+}
+
+.shot {
+  animation: premiumReveal 520ms ease both;
+}
+
+.shot:nth-child(2) { animation-delay: 60ms; }
+.shot:nth-child(3) { animation-delay: 120ms; }
+.shot:nth-child(4) { animation-delay: 180ms; }
+.shot:nth-child(5) { animation-delay: 240ms; }
+.shot:nth-child(6) { animation-delay: 300ms; }
+
+@keyframes premiumReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.previewThumbs > img,
+.renderShots img,
+.miniCompare img,
+.flowVisual img {
+  transition: transform 260ms ease, filter 260ms ease;
+}
+
+.previewThumbs > img:hover,
+.previewThumbs > img:focus-visible,
+.renderShots img:hover,
+.renderShots img:focus-visible,
+.miniCompare:hover img,
+.flowVisual:hover img {
+  filter: saturate(1.08) contrast(1.04) brightness(1.02);
+  transform: scale(1.025);
+}
+
+@media (max-width: 1180px) {
+  h1 {
+    font-size: clamp(2.45rem, 6vw, 4.1rem);
+  }
+}
+
+/* Premium guided flow controls */
+.poolStyleSelector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 auto 22px;
+  justify-content: center;
+}
+
+.poolStyleSelector button {
+  min-height: 42px;
+  border: 1px solid rgba(183, 249, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--ink);
+  padding: 0 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.poolStyleSelector button:hover,
+.poolStyleSelector button:focus-visible,
+.poolStyleSelector button.isActive {
+  border-color: rgba(72, 234, 214, 0.72);
+  background: rgba(72, 234, 214, 0.17);
+  box-shadow: 0 18px 48px rgba(0, 30, 38, 0.34);
+  transform: translateY(-2px);
+  outline: none;
+}
+
+.gallery {
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.gallery.isRefreshing {
+  opacity: 0.42;
+  transform: translateX(8px);
+}
+
+.uploadPreview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.uploadPreview:empty {
+  display: none;
+}
+
+.uploadPreview figure {
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid rgba(183, 249, 255, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.uploadPreview img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.25;
+  object-fit: cover;
+}
+
+.uploadPreview figcaption {
+  overflow: hidden;
+  padding: 7px 8px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.photoTips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.photoTips span {
+  border: 1px solid rgba(183, 249, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--muted);
+  padding: 6px 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.uploadBox::after {
+  content: "";
+  display: block;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(72, 234, 214, 0.18), rgba(255, 212, 122, 0.34), rgba(72, 234, 214, 0.18));
+  background-size: 200% 100%;
+  animation: waterProgress 3.4s ease-in-out infinite;
+}
+
+.formStatus.emotionalSuccess {
+  color: var(--ink);
+  animation: successGlow 720ms ease both;
+}
+
+.galleryBand,
+.leadBand {
+  position: relative;
+  overflow: hidden;
+}
+
+.galleryBand::after,
+.leadBand::after {
+  content: "";
+  position: absolute;
+  right: 8%;
+  bottom: 10%;
+  width: 120px;
+  height: 120px;
+  border: 1px solid rgba(183, 249, 255, 0.08);
+  border-radius: 999px;
+  opacity: 0.45;
+  transform: translateY(18px);
+  animation: waterBubble 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes waterProgress {
+  50% { background-position: 100% 0; }
+}
+
+@keyframes successGlow {
+  from { opacity: 0.4; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes waterBubble {
+  50% { transform: translateY(-18px) scale(1.04); opacity: 0.22; }
+}
+
+@media (max-width: 640px) {
+  .uploadPreview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+
+
+/* Final premium visual QA adjustments */
+.productFlowGrid article {
+  display: flex;
+  flex-direction: column;
+}
+
+.productFlowGrid article > div:last-child {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.productFlowGrid article > div:last-child p {
+  flex: 1;
+}
+
+.productFlowGrid h3 {
+  line-height: 1.24;
+}
+
+.visitVisual img {
+  object-position: center 54%;
+  filter: saturate(1.02) contrast(1.02) brightness(0.96);
+}
+
+@media (max-width: 640px) {
+  .hero {
+    min-height: 820px;
+    padding-right: 32px;
+    padding-left: 32px;
+  }
+
+  .heroContent,
+  .heroContent p:not(.eyebrow),
+  .heroActions,
+  .heroProof {
+    max-width: 100%;
+  }
+
+  h1 {
+    max-width: 100%;
+    font-size: clamp(1.95rem, 8vw, 2.22rem);
+    line-height: 1.08;
+    overflow-wrap: normal;
+  }
+
+  .heroActions .button,
+  .heroProof a {
+    max-width: 100%;
+  }
+
+  .productFlowBand {
+    padding-top: 58px;
+    padding-bottom: 68px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero .heroContent {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .hero .heroContent h1 {
+    width: min(100%, 18ch);
+    max-width: 18ch;
+    font-size: clamp(1.9rem, 7.2vw, 2.12rem);
+  }
+
+  .hero .heroContent p:not(.eyebrow) {
+    width: min(100%, 31ch);
+  }
 }

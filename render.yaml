@@ -6,5 +6,20 @@
     buildCommand: npm install
     startCommand: npm start
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: ENABLE_REAL_IMAGE_GENERATION
         value: "0"
+      - key: LEAD_STORE_MODE
+        value: file
+      - key: STORAGE_MODE
+        value: file
+      - key: SUPABASE_STORAGE_BUCKET
+        value: solara-lead-photos
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+

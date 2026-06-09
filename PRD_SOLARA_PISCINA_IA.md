@@ -119,11 +119,7 @@ Nao implementado por padrao:
 - Repo publico deploy-only: `https://github.com/csantos18/solara-piscina-ia-deploy`
 - Repo privado completo: `https://github.com/csantos18/solara-piscina-ia`
 
-Token admin demo atual:
-
-```text
-solara-admin-2026
-```
+Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Render. Nao publicar segredo administrativo em documentacao publica.
 
 ## 6. Requisitos funcionais
 
@@ -137,7 +133,7 @@ solara-admin-2026
 | RF-06 | Coletar dados de contato | Implementado |
 | RF-07 | Coletar fotos do terreno | Implementado |
 | RF-08 | Coletar medidas e preferencias | Implementado |
-| RF-09 | Salvar lead no servidor | Implementado em arquivo local |
+| RF-09 | Salvar lead no servidor | Implementado em arquivo local, com modo Supabase opcional |
 | RF-10 | Exibir leads em painel admin | Implementado |
 | RF-11 | Exibir metadados das fotos no admin | Implementado |
 | RF-12 | Cadastrar produtos de upsell | Implementado |
@@ -157,7 +153,7 @@ solara-admin-2026
 
 - CRM completo.
 - Pagamento online.
-- Login administrativo profissional.
+- Login administrativo profissional com usuarios, papeis e recuperacao de acesso.
 - Banco de dados definitivo.
 - Storage externo definitivo para fotos.
 - Garantia operacional de obra em 30 dias.
@@ -168,8 +164,8 @@ solara-admin-2026
 
 - Render Free pode hibernar e causar demora no primeiro acesso.
 - Filesystem do Render Free nao deve ser tratado como armazenamento permanente.
-- Token admin simples serve para demo, nao para producao.
-- Fotos e leads precisam migrar para banco/storage antes de uso real.
+- Token admin simples serve para demo/local; em producao deve vir de `ADMIN_TOKEN` e evoluir para login profissional.
+- Leads e fotos podem migrar para Supabase via variaveis de ambiente; para uso real, manter bucket privado e politica de acesso restrita.
 - Premissas comerciais, como prazo de 30 dias, precisam validacao da empresa.
 
 ## 10. Proximos passos recomendados
@@ -182,3 +178,5 @@ solara-admin-2026
 6. Substituir token simples por login administrativo.
 7. Criar status comercial do lead: novo, em analise, orcado, fechado, perdido.
 8. Avaliar dominio proprio e plano pago para apresentacao mais estavel.
+
+

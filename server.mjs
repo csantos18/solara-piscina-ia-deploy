@@ -3,6 +3,7 @@ import { readFile, stat, appendFile, mkdir, writeFile } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import { tmpdir } from "node:os";
 import { extname, join, normalize } from "node:path";
+import { timingSafeEqual } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { IMAGE_GENERATION } from "./src/image-generation-config.js";
 import { TOKENS } from "./src/tokens.js";
@@ -12,6 +13,30 @@ const publicDir = join(root, "public");
 const port = Number(process.env.PORT || 4173);
 const maxLeadPhotoBytes = Number(process.env.MAX_LEAD_PHOTO_BYTES || 10 * 1024 * 1024);
 const maxLeadPhotos = Number(process.env.MAX_LEAD_PHOTOS || 6);
+const maxJsonBodyBytes = Number(process.env.MAX_JSON_BODY_BYTES || 14 * 1024 * 1024);
+const productionMode = process.env.NODE_ENV === "production";
+const adminToken = String(process.env.ADMIN_TOKEN || (productionMode ? "" : "solara-admin-2026")).trim();
+const leadStoreMode = String(process.env.LEAD_STORE_MODE || "file").trim();
+const storageMode = String(process.env.STORAGE_MODE || "file").trim();
+
+const securityHeaders = {
+  "x-content-type-options": "nosniff",
+  "x-frame-options": "DENY",
+  "referrer-policy": "strict-origin-when-cross-origin",
+  "permissions-policy": "camera=(self), geolocation=(), microphone=()"
+};
+
+function headers(extra = {}) {
+  return productionMode
+    ? { ...securityHeaders, "strict-transport-security": "max-age=31536000; includeSubDomains", ...extra }
+    : { ...securityHeaders, ...extra };
+}
+
+function secureEquals(a, b) {
+  const left = Buffer.from(String(a || ""));
+  const right = Buffer.from(String(b || ""));
+  return left.length === right.length && timingSafeEqual(left, right);
+}
 const defaultUpsellProducts = [
   {
     id: "deck-premium",
@@ -58,13 +83,18 @@ const mime = {
 };
 
 function json(res, status, body) {
-  res.writeHead(status, { "content-type": "application/json; charset=utf-8" });
+  res.writeHead(status, headers({ "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }));
   res.end(JSON.stringify(body, null, 2));
 }
 
 async function parseBody(req) {
   const chunks = [];
-  for await (const chunk of req) chunks.push(chunk);
+  let size = 0;
+  for await (const chunk of req) {
+    size += chunk.length;
+    if (size > maxJsonBodyBytes) throw new Error("Payload acima do limite permitido.");
+    chunks.push(chunk);
+  }
   const raw = Buffer.concat(chunks).toString("utf8");
   return raw ? JSON.parse(raw) : {};
 }
@@ -87,6 +117,38 @@ function parseImageDataUrl(photo) {
   return { type: match[1], buffer };
 }
 
+function supabaseConfig() {
+  return {
+    url: String(process.env.SUPABASE_URL || "").replace(/\/$/, ""),
+    key: String(process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim(),
+    bucket: String(process.env.SUPABASE_STORAGE_BUCKET || "solara-lead-photos").trim()
+  };
+}
+
+function supabaseObjectUrl(bucket, objectPath) {
+  return `${supabaseConfig().url}/storage/v1/object/${encodeURIComponent(bucket)}/${objectPath.split("/").map(encodeURIComponent).join("/")}`;
+}
+
+async function savePhotoToSupabaseStorage(fileName, type, buffer) {
+  const { url, key, bucket } = supabaseConfig();
+  if (!url || !key) throw new Error("Supabase Storage nao configurado para fotos.");
+  const objectPath = `leads/${fileName}`;
+  const response = await fetch(supabaseObjectUrl(bucket, objectPath), {
+    method: "POST",
+    headers: {
+      "apikey": key,
+      "authorization": `Bearer ${key}`,
+      "content-type": type || "application/octet-stream",
+      "x-upsert": "false"
+    },
+    body: buffer
+  });
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    throw new Error(`Falha ao salvar foto no Supabase Storage: ${response.status} ${detail}`.trim());
+  }
+  return { bucket, objectPath, storedAs: `supabase://${bucket}/${objectPath}` };
+}
 async function writePhotoFile(directory, fileName, buffer) {
   await mkdir(directory, { recursive: true });
   await writeFile(join(directory, fileName), buffer);
@@ -114,6 +176,13 @@ async function persistLeadPhotos(photos, receivedAt) {
     try {
       const { type, buffer } = parseImageDataUrl(photo);
       const fileName = `${stamp}-${index + 1}-${originalName}`;
+
+      if (storageMode === "supabase") {
+        const stored = await savePhotoToSupabaseStorage(fileName, type, buffer);
+        saved.push({ ...metadata, type, size: buffer.length, stored: true, storageMode: "supabase", ...stored });
+        continue;
+      }
+
       const uploadDir = join(root, "lead-uploads");
       try {
         await writePhotoFile(uploadDir, fileName, buffer);
@@ -132,11 +201,78 @@ async function persistLeadPhotos(photos, receivedAt) {
   return saved;
 }
 
+async function saveLeadToSupabase(record) {
+  const url = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
+  const key = String(process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
+  const table = String(process.env.SUPABASE_LEADS_TABLE || "solara_leads").trim();
+  if (!url || !key) throw new Error("Supabase nao configurado para persistencia de leads.");
+
+  const response = await fetch(`${url}/rest/v1/${table}`, {
+    method: "POST",
+    headers: {
+      "apikey": key,
+      "authorization": `Bearer ${key}`,
+      "content-type": "application/json",
+      "prefer": "return=minimal"
+    },
+    body: JSON.stringify({
+      received_at: record.receivedAt,
+      token: record.token,
+      payload: record
+    })
+  });
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    throw new Error(`Falha ao salvar lead no Supabase: ${response.status} ${detail}`.trim());
+  }
+}
+
+async function readLeadsFromSupabase() {
+  const url = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
+  const key = String(process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
+  const table = String(process.env.SUPABASE_LEADS_TABLE || "solara_leads").trim();
+  if (!url || !key) throw new Error("Supabase nao configurado para leitura de leads.");
+
+  const response = await fetch(`${url}/rest/v1/${table}?select=payload&order=received_at.desc&limit=200`, {
+    headers: {
+      "apikey": key,
+      "authorization": `Bearer ${key}`,
+      "accept": "application/json"
+    }
+  });
+  if (!response.ok) throw new Error(`Falha ao ler leads no Supabase: ${response.status}`);
+  const rows = await response.json();
+  return Array.isArray(rows) ? rows.map((row) => row.payload).filter(Boolean) : [];
+}
+
+async function persistLeadRecord(record) {
+  if (leadStoreMode === "supabase") {
+    await saveLeadToSupabase(record);
+    return { mode: "supabase", message: "Lead registrado no banco de dados." };
+  }
+
+  try {
+    await appendFile(join(root, "leads.jsonl"), JSON.stringify(record) + "\n", "utf8");
+    return { mode: "file", message: "Lead registrado para retorno comercial." };
+  } catch (error) {
+    if (error.code !== "EPERM" && error.code !== "EACCES") throw error;
+    const fallbackPath = process.env.LEADS_FALLBACK_PATH || join(tmpdir(), "solara-piscina-ia-leads.jsonl");
+    await appendFile(fallbackPath, JSON.stringify(record) + "\n", "utf8");
+    return { mode: "fallback-file", message: "Lead registrado em arquivo fallback para retorno comercial.", fallbackPath };
+  }
+}
+
+function storageStatusNote() {
+  const leadMode = leadStoreMode === "supabase" ? "Supabase" : "arquivo local";
+  const photoMode = storageMode === "supabase" ? "Supabase Storage" : "filesystem local";
+  return `Leads em ${leadMode}; fotos em ${photoMode}. Render Free pode perder arquivos locais ao reiniciar.`;
+}
 async function serveFile(req, res) {
   const rawPath = decodeURIComponent(new URL(req.url, `http://${req.headers.host}`).pathname);
 
   if (rotasReservadas.has(rawPath.toLowerCase())) {
-    res.writeHead(410, { "content-type": "text/plain; charset=utf-8" });
+    res.writeHead(410, headers({ "content-type": "text/plain; charset=utf-8" }));
     res.end("Use /000000 para a demo principal Solara Piscina IA.");
     return;
   }
@@ -145,7 +281,7 @@ async function serveFile(req, res) {
   const requestedPath = rawPath === "/" || isKnownTokenPath ? "/index.html" : rawPath === "/admin" ? "/admin.html" : rawPath;
 
   if (/^\/[A-Za-z0-9_-]+$/.test(rawPath) && !isKnownTokenPath && rawPath !== "/admin") {
-    res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
+    res.writeHead(404, headers({ "content-type": "text/plain; charset=utf-8" }));
     res.end("Token não encontrado. Use /000000 para a demo principal.");
     return;
   }
@@ -153,7 +289,7 @@ async function serveFile(req, res) {
   const filePath = normalize(join(baseDir, requestedPath));
 
   if (!filePath.startsWith(baseDir)) {
-    res.writeHead(403);
+    res.writeHead(403, headers());
     res.end("Forbidden");
     return;
   }
@@ -161,10 +297,10 @@ async function serveFile(req, res) {
   try {
     const fileStat = await stat(filePath);
     if (!fileStat.isFile()) throw new Error("Not a file");
-    res.writeHead(200, { "content-type": mime[extname(filePath)] || "application/octet-stream" });
+    res.writeHead(200, headers({ "content-type": mime[extname(filePath)] || "application/octet-stream" }));
     createReadStream(filePath).pipe(res);
   } catch {
-    res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
+    res.writeHead(404, headers({ "content-type": "text/plain; charset=utf-8" }));
     res.end("Not found");
   }
 }
@@ -197,22 +333,8 @@ async function handleLead(req, res) {
     photos,
     source: "solara-piscina-ia-app"
   };
-  try {
-    await appendFile(join(root, "leads.jsonl"), JSON.stringify(record) + "\n", "utf8");
-    json(res, 201, { ok: true, mode: "file", message: "Lead registrado para retorno comercial.", record });
-  } catch (error) {
-    if (error.code !== "EPERM" && error.code !== "EACCES") throw error;
-
-    const fallbackPath = process.env.LEADS_FALLBACK_PATH || join(tmpdir(), "solara-piscina-ia-leads.jsonl");
-    await appendFile(fallbackPath, JSON.stringify(record) + "\n", "utf8");
-    json(res, 201, {
-      ok: true,
-      mode: "fallback-file",
-      message: "Lead registrado em arquivo fallback para retorno comercial.",
-      fallbackPath,
-      record
-    });
-  }
+  const saved = await persistLeadRecord(record);
+  json(res, 201, { ok: true, ...saved, record });
 }
 
 async function handleImageRequest(req, res) {
@@ -280,12 +402,11 @@ function adminTokenFrom(req) {
 }
 
 function requireAdmin(req, res) {
-  const expected = String(process.env.ADMIN_TOKEN || "solara-admin-2026").trim();
-  if (!expected) {
+  if (!adminToken) {
     json(res, 503, { ok: false, error: "ADMIN_TOKEN nao configurado no ambiente." });
     return false;
   }
-  if (adminTokenFrom(req) !== expected) {
+  if (!secureEquals(adminTokenFrom(req), adminToken)) {
     json(res, 401, { ok: false, error: "Token administrativo invalido." });
     return false;
   }
@@ -329,6 +450,7 @@ function leadPublicSummary(record, index) {
 }
 
 async function readLeadRecords() {
+  if (leadStoreMode === "supabase") return readLeadsFromSupabase();
   let text = "";
   try {
     text = await readFile(join(root, "leads.jsonl"), "utf8");
@@ -363,7 +485,7 @@ async function handleAdminLeads(req, res) {
       totalPhotosSaved: leads.reduce((sum, lead) => sum + lead.photoFilesSaved, 0),
       knownTokens: Object.keys(TOKENS),
       imageGenerationMode: process.env.ENABLE_REAL_IMAGE_GENERATION === "1" ? "real" : "dry-run",
-      storageNote: "Plano gratuito usa filesystem efemero; para producao, conectar banco e storage externo."
+      storageNote: storageStatusNote()
     },
     leads
   });
@@ -414,7 +536,7 @@ async function handleAdminProducts(req, res) {
     json(res, 201, { ok: true, product, products: next });
     return;
   }
-  res.writeHead(405);
+  res.writeHead(405, headers());
   res.end("Method not allowed");
 }
 
@@ -427,12 +549,41 @@ async function handlePublicProducts(req, res) {
     products: products.filter((product) => product.status !== "interno")
   });
 }
+async function serveSupabasePhoto(storedAs, res) {
+  const { key, bucket } = supabaseConfig();
+  const prefix = `supabase://${bucket}/`;
+  if (!key || !storedAs.startsWith(prefix)) {
+    res.writeHead(400, headers({ "content-type": "text/plain; charset=utf-8" }));
+    res.end("Arquivo externo invalido.");
+    return;
+  }
+
+  const objectPath = storedAs.slice(prefix.length);
+  const response = await fetch(supabaseObjectUrl(bucket, objectPath), {
+    headers: {
+      "apikey": key,
+      "authorization": `Bearer ${key}`
+    }
+  });
+
+  if (!response.ok) {
+    res.writeHead(response.status === 404 ? 404 : 502, headers({ "content-type": "text/plain; charset=utf-8" }));
+    res.end("Foto nao encontrada no storage externo.");
+    return;
+  }
+
+  const contentType = response.headers.get("content-type") || "application/octet-stream";
+  const buffer = Buffer.from(await response.arrayBuffer());
+  res.writeHead(200, headers({ "content-type": contentType }));
+  res.end(buffer);
+}
 async function handleAdminPhoto(req, res) {
   if (!requireAdmin(req, res)) return;
   const url = new URL(req.url, `http://${req.headers.host}`);
   const storedAs = String(url.searchParams.get("file") || "");
+  if (storedAs.startsWith("supabase://")) return serveSupabasePhoto(storedAs, res);
   if (!storedAs.startsWith("lead-uploads/")) {
-    res.writeHead(400, { "content-type": "text/plain; charset=utf-8" });
+    res.writeHead(400, headers({ "content-type": "text/plain; charset=utf-8" }));
     res.end("Arquivo invalido.");
     return;
   }
@@ -440,7 +591,7 @@ async function handleAdminPhoto(req, res) {
   const uploadsDir = join(root, "lead-uploads");
   const filePath = normalize(join(root, storedAs));
   if (!filePath.startsWith(uploadsDir)) {
-    res.writeHead(403, { "content-type": "text/plain; charset=utf-8" });
+    res.writeHead(403, headers({ "content-type": "text/plain; charset=utf-8" }));
     res.end("Forbidden");
     return;
   }
@@ -448,10 +599,10 @@ async function handleAdminPhoto(req, res) {
   try {
     const fileStat = await stat(filePath);
     if (!fileStat.isFile()) throw new Error("Not a file");
-    res.writeHead(200, { "content-type": mime[extname(filePath)] || "application/octet-stream" });
+    res.writeHead(200, headers({ "content-type": mime[extname(filePath)] || "application/octet-stream" }));
     createReadStream(filePath).pipe(res);
   } catch {
-    res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
+    res.writeHead(404, headers({ "content-type": "text/plain; charset=utf-8" }));
     res.end("Foto nao encontrada neste ambiente.");
   }
 }
@@ -464,7 +615,7 @@ createServer(async (req, res) => {
     if (req.method === "GET" && req.url.startsWith("/api/products")) return handlePublicProducts(req, res);
     if (req.method === "POST" && req.url === "/api/image-generation/request") return handleImageRequest(req, res);
     if (req.method === "GET") return serveFile(req, res);
-    res.writeHead(405);
+    res.writeHead(405, headers());
     res.end("Method not allowed");
   } catch (error) {
     json(res, 500, { ok: false, error: error.message });
@@ -472,9 +623,6 @@ createServer(async (req, res) => {
 }).listen(port, () => {
   console.log(`Solara Piscina IA rodando em http://localhost:${port}/000000`);
 });
-
-
-
 
 
 
