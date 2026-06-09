@@ -5,7 +5,7 @@
     "type":  "module",
     "scripts":  {
                     "start":  "node server.mjs",
-                    "check":  "node --check server.mjs \u0026\u0026 node --check public/app.js \u0026\u0026 node --check public/admin.js \u0026\u0026 node --check src/tokens.js \u0026\u0026 node --check src/image-generation-config.js && node scripts/smoke.mjs"
+                    "check":  "node --check server.mjs \u0026\u0026 node --check public/app.js \u0026\u0026 node --check public/admin.js \u0026\u0026 node --check src/tokens.js \u0026\u0026 node --check src/image-generation-config.js \u0026\u0026 node scripts/smoke.mjs",
+                    "check:supabase":  "node scripts/check-supabase.mjs"
                 }
 }
-

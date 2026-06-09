@@ -16,10 +16,14 @@
         value: file
       - key: SUPABASE_STORAGE_BUCKET
         value: solara-lead-photos
+      - key: SUPABASE_LEADS_TABLE
+        value: solara_leads
       - key: ADMIN_TOKEN
         sync: false
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
+
+
 
