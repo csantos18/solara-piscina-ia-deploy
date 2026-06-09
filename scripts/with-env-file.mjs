@@ -4,12 +4,13 @@ import { spawn } from "node:child_process";
 const [, , envPath, command, ...args] = process.argv;
 
 if (!envPath || !command) {
-  console.error("Uso: node scripts/with-env-file.mjs <arquivo-env> <comando> [args...]");
+  console.error("Uso esperado: node scripts/with-env-file.mjs <arquivo-env> <comando> [args...]");
   process.exit(1);
 }
 
 const text = await readFile(envPath, "utf8").catch((error) => {
-  console.error(`Erro ao ler ${envPath}: ${error.message}`);
+  console.error(`Configuracao local pendente: nao foi possivel ler ${envPath}.`);
+  console.error(error.message);
   process.exit(1);
 });
 

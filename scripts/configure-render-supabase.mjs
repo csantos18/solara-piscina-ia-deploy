@@ -9,8 +9,8 @@ const required = ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"];
 const missing = required.filter((name) => !String(process.env[name] || "").trim());
 
 if (missing.length) {
-  console.error(`Erro: variaveis Supabase ausentes: ${missing.join(", ")}`);
-  console.error("Rode primeiro: SUPABASE_WRITE_TEST=1 npm run check:supabase");
+  console.error(`Configuracao Supabase pendente: ${missing.join(", ")}`);
+  console.error("Valide a conexao Supabase antes de configurar o Render.");
   process.exit(1);
 }
 
@@ -24,7 +24,7 @@ async function renderApiKey() {
 
 const apiKey = await renderApiKey();
 if (!apiKey) {
-  console.error("Erro: RENDER_API_KEY ausente e chave do Render CLI nao encontrada.");
+  console.error("Configuracao Render pendente: chave de API nao encontrada.");
   process.exit(1);
 }
 

@@ -1,4 +1,4 @@
-# Procedimento de Credenciais
+# Credenciais Operacionais
 
 ## Objetivo
 

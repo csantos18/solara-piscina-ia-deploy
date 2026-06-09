@@ -16,6 +16,8 @@ Versao publica enxuta da demo Solara Piscina IA, preparada para Render Free Web 
 - `docs/pitch-coordenador.md` - pitch executivo para aprovacao do piloto.
 - `docs/checklist-aprovacao-premium.md` - checklist tecnico-comercial da aprovacao.
 - `docs/roteiro-demo-5-minutos.md` - roteiro objetivo para demonstracao ao coordenador.
+- `docs/auditoria-pente-fino-2026-06-09.md` - auditoria tecnica e comercial da rodada atual.
+- `docs/credenciais-operacionais.md` - procedimento de credenciais para Supabase e Render.
 
 ## Arquivos principais
 
@@ -51,7 +53,7 @@ Versao publica enxuta da demo Solara Piscina IA, preparada para Render Free Web 
 - O schema versionado esta em `scripts/supabase-schema.sql`.
 - Valide a conexao antes de virar producao com `npm run check:supabase`.
 
-Fluxo recomendado para Supabase Free:
+## Supabase Free
 
 Credenciais sensiveis devem ser configuradas apenas em ambiente local ou nas variaveis secretas do Render. O arquivo `.env.supabase.local` e ignorado pelo Git e serve para validacao tecnica antes da ativacao em producao.
 
