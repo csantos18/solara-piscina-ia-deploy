@@ -9,6 +9,11 @@ if (missing.length) {
 
 const url = String(process.env.SUPABASE_URL).replace(/\/$/, "");
 const key = String(process.env.SUPABASE_SERVICE_ROLE_KEY).trim();
+if (key.includes("NAO_COLE_NO_CHAT") || key === "cole_a_secret_key_aqui" || !key.startsWith("sb_secret_")) {
+  console.error("Erro: SUPABASE_SERVICE_ROLE_KEY ainda nao foi preenchida com a Secret key real.");
+  console.error("Cole a chave somente no arquivo local .env.supabase.local. Nunca cole segredos no chat.");
+  process.exit(1);
+}
 const table = String(process.env.SUPABASE_LEADS_TABLE || "solara_leads").trim();
 const bucket = String(process.env.SUPABASE_STORAGE_BUCKET || "solara-lead-photos").trim();
 const writeTest = process.env.SUPABASE_WRITE_TEST === "1";

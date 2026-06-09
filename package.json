@@ -7,6 +7,9 @@
     "start": "node server.mjs",
     "check": "node --check server.mjs && node --check public/app.js && node --check public/admin.js && node --check src/tokens.js && node --check src/image-generation-config.js && node scripts/smoke.mjs",
     "check:supabase": "node scripts/check-supabase.mjs",
-    "configure:supabase-render": "node scripts/configure-render-supabase.mjs"
+    "check:supabase:local": "node scripts/with-env-file.mjs .env.supabase.local npm.cmd run check:supabase",
+    "check:supabase:write": "node scripts/with-env-file.mjs .env.supabase.local npm.cmd run check:supabase",
+    "configure:supabase-render": "node scripts/configure-render-supabase.mjs",
+    "configure:supabase-render:local": "node scripts/with-env-file.mjs .env.supabase.local npm.cmd run configure:supabase-render"
   }
 }
