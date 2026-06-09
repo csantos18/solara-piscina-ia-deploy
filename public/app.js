@@ -72,12 +72,12 @@ function renderGallery(style = "familiar") {
     gallery.innerHTML = images.map((image, index) => `
       <article class="shot" tabindex="0">
         <div class="shotMedia">
-          <img src="${image.src}" alt="${image.label}" loading="lazy">
-          <span class="dreamMode">${dreamModes[index % dreamModes.length]}</span>
+          <img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.label)}" loading="lazy">
+          <span class="dreamMode">${escapeHtml(dreamModes[index % dreamModes.length])}</span>
         </div>
         <div>
-          <h3>${image.label}</h3>
-          <p>${image.description || "Referência visual para ajudar o cliente a imaginar a piscina pronta."}</p>
+          <h3>${escapeHtml(image.label)}</h3>
+          <p>${escapeHtml(image.description || "Referência visual para ajudar o cliente a imaginar a piscina pronta.")}</p>
         </div>
       </article>
     `).join("");
@@ -102,6 +102,15 @@ const uploadPreview = document.querySelector("#uploadPreview");
 const startSimulation = document.querySelector("#startSimulation");
 const leadFields = document.querySelector("#leadFields");
 
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function selectedPhotos() {
   const formData = new FormData(leadForm);
   return formData.getAll("photos").filter((file) => file instanceof File && file.name);
@@ -115,8 +124,8 @@ function updateUploadStatus() {
   if (!uploadPreview) return;
   uploadPreview.innerHTML = photos.slice(0, 4).map((file) => `
     <figure>
-      <img src="${URL.createObjectURL(file)}" alt="Prévia enviada: ${file.name}">
-      <figcaption>${file.name}</figcaption>
+      <img src="${URL.createObjectURL(file)}" alt="Prévia enviada: ${escapeHtml(file.name)}">
+      <figcaption>${escapeHtml(file.name)}</figcaption>
     </figure>
   `).join("");
 }
