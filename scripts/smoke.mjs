@@ -39,6 +39,12 @@ try {
   await expectStatus("/badtoken", 404);
   await expectStatus("/admin", 200);
   await expectStatus("/api/products", 200);
+  await expectStatus("/api/leads", 400, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: "{bad"
+  });
+  await expectStatus("/000000", 200);
 
   const maliciousName = '<img src=x onerror="alert(1)">';
   await expectStatus("/api/leads", 201, {
@@ -66,3 +72,4 @@ try {
 } finally {
   server.kill();
 }
+

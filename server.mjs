@@ -92,13 +92,23 @@ async function parseBody(req) {
   let size = 0;
   for await (const chunk of req) {
     size += chunk.length;
-    if (size > maxJsonBodyBytes) throw new Error("Payload acima do limite permitido.");
+    if (size > maxJsonBodyBytes) {
+      const error = new Error("Payload acima do limite permitido.");
+      error.statusCode = 413;
+      throw error;
+    }
     chunks.push(chunk);
   }
   const raw = Buffer.concat(chunks).toString("utf8");
-  return raw ? JSON.parse(raw) : {};
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw);
+  } catch {
+    const error = new Error("JSON invalido no corpo da requisicao.");
+    error.statusCode = 400;
+    throw error;
+  }
 }
-
 function safeUploadName(name) {
   const clean = String(name || "foto-terreno")
     .normalize("NFD")
@@ -186,7 +196,7 @@ async function persistLeadPhotos(photos, receivedAt) {
       const uploadDir = join(root, "lead-uploads");
       try {
         await writePhotoFile(uploadDir, fileName, buffer);
-        saved.push({ ...metadata, type, size: buffer.length, stored: true, storageMode: "file", storedAs: join("lead-uploads", fileName) });
+        saved.push({ ...metadata, type, size: buffer.length, stored: true, storageMode: "file", storedAs: `lead-uploads/${fileName}` });
       } catch (error) {
         if (error.code !== "EPERM" && error.code !== "EACCES") throw error;
         const fallbackDir = process.env.LEAD_UPLOADS_FALLBACK_DIR || join(tmpdir(), "solara-piscina-ia-uploads");
@@ -580,7 +590,7 @@ async function serveSupabasePhoto(storedAs, res) {
 async function handleAdminPhoto(req, res) {
   if (!requireAdmin(req, res)) return;
   const url = new URL(req.url, `http://${req.headers.host}`);
-  const storedAs = String(url.searchParams.get("file") || "");
+  const storedAs = String(url.searchParams.get("file") || "").replaceAll("\\", "/");
   if (storedAs.startsWith("supabase://")) return serveSupabasePhoto(storedAs, res);
   if (!storedAs.startsWith("lead-uploads/")) {
     res.writeHead(400, headers({ "content-type": "text/plain; charset=utf-8" }));
@@ -608,21 +618,46 @@ async function handleAdminPhoto(req, res) {
 }
 createServer(async (req, res) => {
   try {
-    if (req.method === "POST" && req.url === "/api/leads") return handleLead(req, res);
-    if (req.method === "GET" && req.url.startsWith("/api/admin/leads")) return handleAdminLeads(req, res);
-    if (req.url.startsWith("/api/admin/products")) return handleAdminProducts(req, res);
-    if (req.method === "GET" && req.url.startsWith("/api/admin/photo")) return handleAdminPhoto(req, res);
-    if (req.method === "GET" && req.url.startsWith("/api/products")) return handlePublicProducts(req, res);
-    if (req.method === "POST" && req.url === "/api/image-generation/request") return handleImageRequest(req, res);
-    if (req.method === "GET") return serveFile(req, res);
+    if (req.method === "POST" && req.url === "/api/leads") {
+      await handleLead(req, res);
+      return;
+    }
+    if (req.method === "GET" && req.url.startsWith("/api/admin/leads")) {
+      await handleAdminLeads(req, res);
+      return;
+    }
+    if (req.url.startsWith("/api/admin/products")) {
+      await handleAdminProducts(req, res);
+      return;
+    }
+    if (req.method === "GET" && req.url.startsWith("/api/admin/photo")) {
+      await handleAdminPhoto(req, res);
+      return;
+    }
+    if (req.method === "GET" && req.url.startsWith("/api/products")) {
+      await handlePublicProducts(req, res);
+      return;
+    }
+    if (req.method === "POST" && req.url === "/api/image-generation/request") {
+      await handleImageRequest(req, res);
+      return;
+    }
+    if (req.method === "GET") {
+      await serveFile(req, res);
+      return;
+    }
     res.writeHead(405, headers());
     res.end("Method not allowed");
   } catch (error) {
-    json(res, 500, { ok: false, error: error.message });
+    const status = Number(error.statusCode || 500);
+    json(res, status, { ok: false, error: error.message });
   }
 }).listen(port, () => {
   console.log(`Solara Piscina IA rodando em http://localhost:${port}/000000`);
 });
+
+
+
 
 
 
