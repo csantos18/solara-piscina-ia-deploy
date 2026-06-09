@@ -10,15 +10,17 @@ const runtimeDir = join(tmpdir(), `solara-smoke-${Date.now()}`);
 
 await mkdir(runtimeDir, { recursive: true });
 
+const serverEnv = {
+  ...process.env,
+  PORT: String(port),
+  NODE_ENV: "development",
+  LEADS_FILE_PATH: join(runtimeDir, "leads.jsonl"),
+  LEAD_UPLOADS_DIR: join(runtimeDir, "lead-uploads")
+};
+
 const server = spawn(process.execPath, ["server.mjs"], {
   cwd: new URL("..", import.meta.url),
-  env: {
-    ...process.env,
-    PORT: String(port),
-    NODE_ENV: "development",
-    LEADS_FILE_PATH: join(runtimeDir, "leads.jsonl"),
-    LEAD_UPLOADS_DIR: join(runtimeDir, "lead-uploads")
-  },
+  env: serverEnv,
   stdio: ["ignore", "pipe", "pipe"]
 });
 
