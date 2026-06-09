@@ -59,8 +59,9 @@ Fluxo recomendado para Supabase Free:
 4. Definir localmente `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET=solara-lead-photos` e `SUPABASE_LEADS_TABLE=solara_leads`.
 5. Rodar `npm run check:supabase` para leitura de tabela/bucket.
 6. Rodar `SUPABASE_WRITE_TEST=1 npm run check:supabase` para escrita temporaria de lead e objeto.
-7. No Render, configurar `LEAD_STORE_MODE=supabase`, `STORAGE_MODE=supabase`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET` e `SUPABASE_LEADS_TABLE`.
-8. Fazer deploy e validar envio real de lead com foto no admin.
+7. Rodar `npm run configure:supabase-render` para configurar o Render sem imprimir segredos.
+8. Fazer deploy no Render.
+9. Validar `/api/health`, envio real de lead com foto e leitura no admin.
 
 ## Limites conhecidos
 
@@ -89,7 +90,3 @@ http://localhost:4173/admin
 ```bash
 npm.cmd run check
 ```
-
-
-
-
