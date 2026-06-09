@@ -18,6 +18,8 @@ const productionMode = process.env.NODE_ENV === "production";
 const adminToken = String(process.env.ADMIN_TOKEN || (productionMode ? "" : "solara-admin-2026")).trim();
 const leadStoreMode = String(process.env.LEAD_STORE_MODE || "file").trim();
 const storageMode = String(process.env.STORAGE_MODE || "file").trim();
+const leadFilePath = process.env.LEADS_FILE_PATH || join(root, "leads.jsonl");
+const leadUploadsDir = process.env.LEAD_UPLOADS_DIR || join(root, "lead-uploads");
 
 const securityHeaders = {
   "x-content-type-options": "nosniff",
@@ -210,9 +212,8 @@ async function persistLeadPhotos(photos, receivedAt) {
         continue;
       }
 
-      const uploadDir = join(root, "lead-uploads");
       try {
-        await writePhotoFile(uploadDir, fileName, buffer);
+        await writePhotoFile(leadUploadsDir, fileName, buffer);
         saved.push({ ...metadata, type, size: buffer.length, stored: true, storageMode: "file", storedAs: `lead-uploads/${fileName}` });
       } catch (error) {
         if (error.code !== "EPERM" && error.code !== "EACCES") throw error;
@@ -280,7 +281,7 @@ async function persistLeadRecord(record) {
   }
 
   try {
-    await appendFile(join(root, "leads.jsonl"), JSON.stringify(record) + "\n", "utf8");
+    await appendFile(leadFilePath, JSON.stringify(record) + "\n", "utf8");
     return { mode: "file", message: "Lead registrado para retorno comercial." };
   } catch (error) {
     if (error.code !== "EPERM" && error.code !== "EACCES") throw error;
@@ -507,7 +508,7 @@ async function readLeadRecords() {
   if (leadStoreMode === "supabase") return readLeadsFromSupabase();
   let text = "";
   try {
-    text = await readFile(join(root, "leads.jsonl"), "utf8");
+    text = await readFile(leadFilePath, "utf8");
   } catch (error) {
     if (error.code !== "ENOENT") throw error;
   }
@@ -642,7 +643,7 @@ async function handleAdminPhoto(req, res) {
     return;
   }
 
-  const uploadsDir = join(root, "lead-uploads");
+  const uploadsDir = leadUploadsDir;
   const filePath = normalize(join(root, storedAs));
   if (!isPathInside(filePath, uploadsDir)) {
     res.writeHead(403, headers({ "content-type": "text/plain; charset=utf-8" }));

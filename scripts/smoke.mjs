@@ -1,12 +1,24 @@
-﻿import { spawn } from "node:child_process";
+import { spawn } from "node:child_process";
+import { mkdir, rm } from "node:fs/promises";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 
 const port = 4399;
 const baseUrl = `http://localhost:${port}`;
 const adminToken = "solara-admin-2026";
+const runtimeDir = join(tmpdir(), `solara-smoke-${Date.now()}`);
+
+await mkdir(runtimeDir, { recursive: true });
 
 const server = spawn(process.execPath, ["server.mjs"], {
   cwd: new URL("..", import.meta.url),
-  env: { ...process.env, PORT: String(port), NODE_ENV: "development" },
+  env: {
+    ...process.env,
+    PORT: String(port),
+    NODE_ENV: "development",
+    LEADS_FILE_PATH: join(runtimeDir, "leads.jsonl"),
+    LEAD_UPLOADS_DIR: join(runtimeDir, "lead-uploads")
+  },
   stdio: ["ignore", "pipe", "pipe"]
 });
 
@@ -100,6 +112,5 @@ try {
   console.log("OK: smoke test local completo passou.");
 } finally {
   server.kill();
+  await rm(runtimeDir, { recursive: true, force: true });
 }
-
-
