@@ -47,14 +47,36 @@ try {
     headers: { "content-type": "application/json" },
     body: "{bad"
   });
+  await expectStatus("/api/leads", 400, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ token: "000000", name: "Lead sem telefone", photos: [] })
+  });
+  await expectStatus("/api/leads", 400, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ token: "token-invalido", name: "Lead QA", phone: "+550000000000", photos: [] })
+  });
   await expectStatus("/000000", 200);
 
   const maliciousName = '<img src=x onerror="alert(1)">';
-  await expectStatus("/api/leads", 201, {
+  const leadResponse = await expectStatus("/api/leads", 201, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ token: "000000", name: maliciousName, phone: "+550000000000", photos: [] })
+    body: JSON.stringify({
+      token: "000000",
+      name: maliciousName,
+      phone: "+550000000000",
+      photos: [{
+        name: "vetor.svg",
+        type: "image/svg+xml",
+        size: 80,
+        dataUrl: "data:image/svg+xml;base64,PHN2ZyBvbmxvYWQ9ImFsZXJ0KDEpIi8+"
+      }]
+    })
   });
+  const lead = await leadResponse.json();
+  if (lead.record?.photoFilesSaved !== 0) throw new Error("SVG nao deve ser salvo como foto de lead.");
 
   const adminResponse = await expectStatus("/api/admin/leads", 200, {
     headers: { "x-admin-token": adminToken }

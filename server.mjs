@@ -2,7 +2,7 @@
 import { readFile, stat, appendFile, mkdir, writeFile } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import { tmpdir } from "node:os";
-import { extname, join, normalize } from "node:path";
+import { extname, join, normalize, sep } from "node:path";
 import { timingSafeEqual } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { IMAGE_GENERATION } from "./src/image-generation-config.js";
@@ -82,6 +82,12 @@ const mime = {
   ".svg": "image/svg+xml"
 };
 
+const allowedLeadPhotoTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+
+function isPathInside(filePath, baseDir) {
+  return filePath === baseDir || filePath.startsWith(baseDir + sep);
+}
+
 function json(res, status, body) {
   res.writeHead(status, headers({ "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }));
   res.end(JSON.stringify(body, null, 2));
@@ -122,6 +128,7 @@ function safeUploadName(name) {
 function parseImageDataUrl(photo) {
   const match = String(photo.dataUrl || "").match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,([a-zA-Z0-9+/=]+)$/);
   if (!match) throw new Error("Formato de foto invalido.");
+  if (!allowedLeadPhotoTypes.has(match[1])) throw new Error("Tipo de foto nao permitido.");
   const buffer = Buffer.from(match[2], "base64");
   if (buffer.length > maxLeadPhotoBytes) throw new Error("Foto acima do limite permitido.");
   return { type: match[1], buffer };
@@ -314,7 +321,7 @@ async function serveFile(req, res) {
   const baseDir = requestedPath.startsWith("/src/") ? root : publicDir;
   const filePath = normalize(join(baseDir, requestedPath));
 
-  if (!filePath.startsWith(baseDir)) {
+  if (!isPathInside(filePath, baseDir)) {
     res.writeHead(403, headers());
     res.end("Forbidden");
     return;
@@ -333,13 +340,24 @@ async function serveFile(req, res) {
 
 async function handleLead(req, res) {
   const body = await parseBody(req);
+  const token = String(body.token || "000000").trim();
+  const name = String(body.name || "").trim();
+  const phone = String(body.phone || "").trim();
+  if (!Object.hasOwn(TOKENS, token)) {
+    json(res, 400, { ok: false, error: "Token do projeto nao encontrado." });
+    return;
+  }
+  if (!name || !phone) {
+    json(res, 400, { ok: false, error: "Nome e WhatsApp sao obrigatorios." });
+    return;
+  }
   const receivedAt = new Date().toISOString();
   const photos = await persistLeadPhotos(body.photos, receivedAt);
   const record = {
     receivedAt,
-    token: body.token || "000000",
-    name: body.name || "",
-    phone: body.phone || "",
+    token,
+    name,
+    phone,
     email: body.email || "",
     address: body.address || "",
     interest: body.interest || "",
@@ -616,7 +634,7 @@ async function handleAdminPhoto(req, res) {
 
   const uploadsDir = join(root, "lead-uploads");
   const filePath = normalize(join(root, storedAs));
-  if (!filePath.startsWith(uploadsDir)) {
+  if (!isPathInside(filePath, uploadsDir)) {
     res.writeHead(403, headers({ "content-type": "text/plain; charset=utf-8" }));
     res.end("Forbidden");
     return;

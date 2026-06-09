@@ -16,6 +16,8 @@
 - [x] Upload de fotos funcionando.
 - [x] Lead com foto foi testado em producao.
 - [x] Erro de foto invalida nao derruba o sistema.
+- [x] API valida nome e WhatsApp no servidor.
+- [x] API bloqueia token de lead desconhecido.
 
 ## Admin
 
@@ -26,6 +28,7 @@
 - [x] Foto de lead abre pela rota admin autenticada.
 - [x] Path traversal em foto admin bloqueado.
 - [x] Cadastro de produtos/upsell disponivel.
+- [x] Tipos de upload perigosos, como SVG, nao sao salvos como foto.
 
 ## Robustez tecnica
 
