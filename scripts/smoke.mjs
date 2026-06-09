@@ -38,6 +38,9 @@ try {
   await expectStatus("/111111", 200);
   await expectStatus("/badtoken", 404);
   await expectStatus("/admin", 200);
+  const healthResponse = await expectStatus("/api/health", 200);
+  const health = await healthResponse.json();
+  if (!health.ok || health.service !== "solara-piscina-ia") throw new Error("Health check invalido.");
   await expectStatus("/api/products", 200);
   await expectStatus("/api/leads", 400, {
     method: "POST",
@@ -72,4 +75,5 @@ try {
 } finally {
   server.kill();
 }
+
 

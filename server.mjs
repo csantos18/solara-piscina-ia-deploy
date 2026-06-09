@@ -278,6 +278,22 @@ function storageStatusNote() {
   const photoMode = storageMode === "supabase" ? "Supabase Storage" : "filesystem local";
   return `Leads em ${leadMode}; fotos em ${photoMode}. Render Free pode perder arquivos locais ao reiniciar.`;
 }
+function handleHealth(req, res) {
+  json(res, 200, {
+    ok: true,
+    service: "solara-piscina-ia",
+    generatedAt: new Date().toISOString(),
+    uptimeSeconds: Math.round(process.uptime()),
+    environment: productionMode ? "production" : "development",
+    storage: {
+      leads: leadStoreMode,
+      photos: storageMode,
+      note: storageStatusNote()
+    },
+    imageGenerationMode: process.env.ENABLE_REAL_IMAGE_GENERATION === "1" ? "real" : "dry-run",
+    knownTokens: Object.keys(TOKENS)
+  });
+}
 async function serveFile(req, res) {
   const rawPath = decodeURIComponent(new URL(req.url, `http://${req.headers.host}`).pathname);
 
@@ -618,6 +634,10 @@ async function handleAdminPhoto(req, res) {
 }
 createServer(async (req, res) => {
   try {
+    if (req.method === "GET" && req.url === "/api/health") {
+      handleHealth(req, res);
+      return;
+    }
     if (req.method === "POST" && req.url === "/api/leads") {
       await handleLead(req, res);
       return;
@@ -655,6 +675,9 @@ createServer(async (req, res) => {
 }).listen(port, () => {
   console.log(`Solara Piscina IA rodando em http://localhost:${port}/000000`);
 });
+
+
+
 
 
 

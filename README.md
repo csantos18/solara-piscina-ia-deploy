@@ -8,6 +8,7 @@ Versao publica enxuta da demo Solara Piscina IA, preparada para Render Free Web 
 - Demo secundaria: `https://solara-piscina-ia.onrender.com/111111`
 - Painel admin: `https://solara-piscina-ia.onrender.com/admin`
 - Catalogo publico de upsell: `https://solara-piscina-ia.onrender.com/api/products`
+- Health check: `https://solara-piscina-ia.onrender.com/api/health`
 
 ## Documentacao
 
@@ -88,6 +89,7 @@ http://localhost:4173/admin
 ```bash
 npm.cmd run check
 ```
+
 
 
 
