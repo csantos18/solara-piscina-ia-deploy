@@ -53,13 +53,13 @@ Versao publica enxuta da demo Solara Piscina IA, preparada para Render Free Web 
 
 Fluxo recomendado para Supabase Free:
 
-Regra de seguranca: nunca cole `SUPABASE_SERVICE_ROLE_KEY` em chat, README, commit, print publico ou documento compartilhado. Essa chave deve entrar somente no arquivo local `.env.supabase.local` ou diretamente nas variaveis secretas do Render.
+Credenciais sensiveis devem ser configuradas apenas em ambiente local ou nas variaveis secretas do Render. O arquivo `.env.supabase.local` e ignorado pelo Git e serve para validacao tecnica antes da ativacao em producao.
 
 1. Criar um projeto no Supabase.
 2. Abrir SQL Editor e executar `scripts/supabase-schema.sql`.
 3. Criar o bucket privado `solara-lead-photos` em Storage.
 4. Definir localmente `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_STORAGE_BUCKET=solara-lead-photos` e `SUPABASE_LEADS_TABLE=solara_leads`.
-5. Alternativa segura: copiar `.env.supabase.example` para `.env.supabase.local` e preencher a chave somente nesse arquivo local. O arquivo ja fica protegido por `.gitignore`.
+5. Copiar `.env.supabase.example` para `.env.supabase.local` e preencher a chave no arquivo local.
 6. Rodar `npm run check:supabase:local` para leitura de tabela/bucket.
 7. Rodar `npm run check:supabase:write` para escrita temporaria de lead e objeto.
 8. Rodar `npm run configure:supabase-render:local` para configurar o Render sem imprimir segredos.

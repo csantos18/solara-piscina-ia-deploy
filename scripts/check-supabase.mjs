@@ -2,16 +2,16 @@
 const missing = required.filter((name) => !String(process.env[name] || "").trim());
 
 if (missing.length) {
-  console.error(`Erro: variaveis ausentes: ${missing.join(", ")}`);
-  console.error("Defina SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY antes de rodar este check.");
+  console.error(`Configuracao Supabase pendente: ${missing.join(", ")}`);
+  console.error("Preencha as variaveis locais antes de validar a conexao.");
   process.exit(1);
 }
 
 const url = String(process.env.SUPABASE_URL).replace(/\/$/, "");
 const key = String(process.env.SUPABASE_SERVICE_ROLE_KEY).trim();
-if (key.includes("NAO_COLE_NO_CHAT") || key === "cole_a_secret_key_aqui" || !key.startsWith("sb_secret_")) {
-  console.error("Erro: SUPABASE_SERVICE_ROLE_KEY ainda nao foi preenchida com a Secret key real.");
-  console.error("Cole a chave somente no arquivo local .env.supabase.local. Nunca cole segredos no chat.");
+if (key === "substitua_pela_secret_key_local" || !key.startsWith("sb_secret_")) {
+  console.error("Configuracao Supabase pendente: Secret key nao informada.");
+  console.error("Preencha SUPABASE_SERVICE_ROLE_KEY no arquivo local .env.supabase.local antes da validacao.");
   process.exit(1);
 }
 const table = String(process.env.SUPABASE_LEADS_TABLE || "solara_leads").trim();
