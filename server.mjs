@@ -23,7 +23,17 @@ const securityHeaders = {
   "x-content-type-options": "nosniff",
   "x-frame-options": "DENY",
   "referrer-policy": "strict-origin-when-cross-origin",
-  "permissions-policy": "camera=(self), geolocation=(), microphone=()"
+  "permissions-policy": "camera=(self), geolocation=(), microphone=()",
+  "content-security-policy": [
+    "default-src 'self'",
+    "script-src 'self'",
+    "style-src 'self'",
+    "img-src 'self' data: blob: https://api.qrserver.com",
+    "connect-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "frame-ancestors 'none'"
+  ].join("; ")
 };
 
 function headers(extra = {}) {
@@ -652,31 +662,33 @@ async function handleAdminPhoto(req, res) {
 }
 createServer(async (req, res) => {
   try {
-    if (req.method === "GET" && req.url === "/api/health") {
+    const pathname = new URL(req.url, `http://${req.headers.host}`).pathname;
+
+    if (req.method === "GET" && pathname === "/api/health") {
       handleHealth(req, res);
       return;
     }
-    if (req.method === "POST" && req.url === "/api/leads") {
+    if (req.method === "POST" && pathname === "/api/leads") {
       await handleLead(req, res);
       return;
     }
-    if (req.method === "GET" && req.url.startsWith("/api/admin/leads")) {
+    if (req.method === "GET" && pathname === "/api/admin/leads") {
       await handleAdminLeads(req, res);
       return;
     }
-    if (req.url.startsWith("/api/admin/products")) {
+    if (pathname === "/api/admin/products") {
       await handleAdminProducts(req, res);
       return;
     }
-    if (req.method === "GET" && req.url.startsWith("/api/admin/photo")) {
+    if (req.method === "GET" && pathname === "/api/admin/photo") {
       await handleAdminPhoto(req, res);
       return;
     }
-    if (req.method === "GET" && req.url.startsWith("/api/products")) {
+    if (req.method === "GET" && pathname === "/api/products") {
       await handlePublicProducts(req, res);
       return;
     }
-    if (req.method === "POST" && req.url === "/api/image-generation/request") {
+    if (req.method === "POST" && pathname === "/api/image-generation/request") {
       await handleImageRequest(req, res);
       return;
     }
