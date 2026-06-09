@@ -57,7 +57,7 @@ const dreamModes = ["Dia claro", "Pôr do sol", "Noite com luzes", "Revestimento
 const stylePriority = {
   familiar: ["pool-3d", "pool-dream", "top-view", "satellite-after", "solar-upsell", "satellite-before"],
   moderna: ["pool-dream", "pool-3d", "solar-upsell", "top-view", "satellite-after", "satellite-before"],
-  prainha: ["top-view", "pool-dream", "pool-3d", "satellite-after", "solar-upsell", "satellite-before"]
+  lounge: ["top-view", "pool-dream", "pool-3d", "satellite-after", "solar-upsell", "satellite-before"]
 };
 
 function orderedImages(style = "familiar") {
@@ -230,3 +230,4 @@ document.querySelectorAll(".button").forEach((button) => {
     window.setTimeout(() => button.classList.remove("isLoading"), 720);
   });
 });
+

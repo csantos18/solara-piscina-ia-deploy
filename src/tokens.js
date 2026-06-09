@@ -92,7 +92,7 @@ export const TOKENS = {
   "111111": {
     token: "111111",
     brand: "Solara Piscina IA",
-    productName: "Piscina Familiar com Prainha",
+    productName: "Piscina Familiar com Área Lounge",
     city: "Florida",
     region: "Projeto demo residencial",
     address: "Quintal familiar com área de lazer",
@@ -119,13 +119,14 @@ export const TOKENS = {
     }),
     prompts: {
       ...basePrompts,
-      poolDream: "Gerar imagem de piscina familiar premium com prainha, água azul clara, deck seguro, espaço para lazer e sensação de casa valorizada.",
-      pool3d: "Gerar visualização 3D comercial de piscina familiar com prainha e acabamento moderno, mostrando área rasa, deck e circulação confortável.",
-      topViewPlan: "Gerar vista superior para cliente familiar, destacando piscina, prainha, deck, circulação e área livre para convivência.",
+      poolDream: "Gerar imagem de piscina familiar premium com área lounge rasa, água azul clara, deck seguro, espaço para lazer e sensação de casa valorizada.",
+      pool3d: "Gerar visualização 3D comercial de piscina familiar com área lounge rasa e acabamento moderno, mostrando área rasa, deck e circulação confortável.",
+      topViewPlan: "Gerar vista superior para cliente familiar, destacando piscina, área lounge rasa, deck, circulação e área livre para convivência.",
       topSimulation: "Criar simulação visual por cima mostrando piscina familiar inserida no quintal, com proporção clara e foco em decisão de orçamento."
     }
   }
 };
+
 
 
 
