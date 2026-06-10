@@ -12,12 +12,8 @@ Versao publica enxuta da demo Solara Piscina IA, preparada para Render Free Web 
 
 ## Documentacao
 
-- `docs/00-leia-primeiro.md` - ponto de entrada limpo para apresentacao e revisao.
+- `docs/00-leia-primeiro.md` - ponto de entrada operacional.
 - `PRD_SOLARA_PISCINA_IA.md` - requisitos, escopo, status, limites e proximos passos do produto.
-- `docs/pitch-coordenador.md` - pitch executivo para aprovacao do piloto.
-- `docs/checklist-aprovacao-premium.md` - checklist tecnico-comercial da aprovacao.
-- `docs/roteiro-demo-5-minutos.md` - roteiro objetivo para demonstracao ao coordenador.
-- `docs/auditoria-pente-fino-2026-06-09.md` - auditoria tecnica e comercial da rodada atual.
 - `docs/credenciais-operacionais.md` - procedimento de credenciais para Supabase e Render.
 
 ## Arquivos principais
@@ -46,7 +42,7 @@ Versao publica enxuta da demo Solara Piscina IA, preparada para Render Free Web 
 
 ## Seguranca e producao
 
-- Em producao, configure `ADMIN_TOKEN` no Render. O token padrao existe somente para desenvolvimento local sem `NODE_ENV=production`.
+- Configure `ADMIN_TOKEN` no Render e tambem no ambiente local quando precisar acessar o admin.
 - O servidor aplica headers basicos de seguranca e compara token administrativo com `timingSafeEqual`.
 - O corpo JSON tem limite configuravel por `MAX_JSON_BODY_BYTES`.
 - Leads rodam em arquivo por padrao para manter compatibilidade com Render Free.

@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 
 const port = 4399;
 const baseUrl = `http://localhost:${port}`;
-const adminToken = "solara-admin-2026";
+const adminToken = "smoke-admin-token";
 const runtimeDir = join(tmpdir(), `solara-smoke-${Date.now()}`);
 
 await mkdir(runtimeDir, { recursive: true });
@@ -14,6 +14,7 @@ const serverEnv = {
   ...process.env,
   PORT: String(port),
   NODE_ENV: "development",
+  ADMIN_TOKEN: adminToken,
   LEADS_FILE_PATH: join(runtimeDir, "leads.jsonl"),
   LEAD_UPLOADS_DIR: join(runtimeDir, "lead-uploads")
 };

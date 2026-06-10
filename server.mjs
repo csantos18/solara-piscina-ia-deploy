@@ -15,7 +15,7 @@ const maxLeadPhotoBytes = Number(process.env.MAX_LEAD_PHOTO_BYTES || 10 * 1024 *
 const maxLeadPhotos = Number(process.env.MAX_LEAD_PHOTOS || 6);
 const maxJsonBodyBytes = Number(process.env.MAX_JSON_BODY_BYTES || 14 * 1024 * 1024);
 const productionMode = process.env.NODE_ENV === "production";
-const adminToken = String(process.env.ADMIN_TOKEN || (productionMode ? "" : "solara-admin-2026")).trim();
+const adminToken = String(process.env.ADMIN_TOKEN || "").trim();
 const leadStoreMode = String(process.env.LEAD_STORE_MODE || "file").trim();
 const storageMode = String(process.env.STORAGE_MODE || "file").trim();
 const leadFilePath = process.env.LEADS_FILE_PATH || join(root, "leads.jsonl");
