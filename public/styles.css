@@ -614,6 +614,15 @@ textarea {
   margin-bottom: 6px;
 }
 
+.qrPanel span {
+  max-width: 260px;
+  text-transform: none;
+  overflow-wrap: anywhere;
+  letter-spacing: 0;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
 .leadForm {
   display: grid;
   gap: 14px;
