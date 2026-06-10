@@ -263,6 +263,7 @@ h3 {
   border-radius: 6px;
   object-fit: cover;
   filter: none;
+  pointer-events: auto;
 }
 
 .button {
@@ -926,9 +927,18 @@ footer {
   50% { opacity: 1; transform: scaleX(1); }
 }
 
+@keyframes previewThumbFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.012); }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   #mainVisual {
     animation: heroSlowZoom 18s ease-in-out infinite alternate;
+  }
+
+  .previewThumbs > img {
+    animation: previewThumbFloat 4.2s ease-in-out infinite;
   }
 }
 
@@ -2356,7 +2366,13 @@ h1 {
 .miniCompare:hover img,
 .flowVisual:hover img {
   filter: saturate(1.08) contrast(1.04) brightness(1.02);
-  transform: scale(1.025);
+  transform: translateY(-3px) scale(1.025);
+}
+
+.previewThumbs > img:hover,
+.previewThumbs > img:focus-visible {
+  animation: none;
+  transform: translateY(-5px) scale(1.03);
 }
 
 @media (max-width: 1180px) {
