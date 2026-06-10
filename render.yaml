@@ -3,7 +3,7 @@
     name: solara-piscina-ia
     runtime: node
     plan: free
-    buildCommand: npm install
+    buildCommand: npm ci
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
@@ -12,11 +12,11 @@
       - key: ENABLE_REAL_IMAGE_GENERATION
         value: "0"
       - key: LEAD_STORE_MODE
-        value: file
+        value: supabase
       - key: STORAGE_MODE
-        value: file
+        value: supabase
       - key: REQUIRE_PERSISTENT_STORAGE
-        value: "0"
+        value: "1"
       - key: SUPABASE_STORAGE_BUCKET
         value: solara-lead-photos
       - key: SUPABASE_LEADS_TABLE

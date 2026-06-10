@@ -1,10 +1,10 @@
 # Solara Piscina IA - Leia Primeiro
 
-Esta pasta e a versao publica enxuta para deploy.
+Esta pasta e a versao publica enxuta para deploy com Render Free e Supabase Free.
 
 Use este repositorio somente para:
 
-1. rodar a demo publicada;
+1. rodar a experiencia publicada;
 2. revisar o codigo que vai para o Render;
 3. configurar variaveis de ambiente;
 4. validar health check, lead, upload e painel admin.
@@ -29,6 +29,6 @@ Este repositorio nao deve conter pitch interno, arquivos de auditoria, backups, 
 
 ## Regra de operacao real
 
-Render Free pode hospedar a aplicacao para validacao. Para cliente real recorrente, o armazenamento deve estar em Supabase Free ou equivalente, com `LEAD_STORE_MODE=supabase`, `STORAGE_MODE=supabase` e `REQUIRE_PERSISTENT_STORAGE=1`.
+Render Free pode hospedar a aplicacao para validacao e piloto controlado. Para cliente real recorrente, o armazenamento deve permanecer em Supabase Free ou equivalente, com `LEAD_STORE_MODE=supabase`, `STORAGE_MODE=supabase` e `REQUIRE_PERSISTENT_STORAGE=1`.
 
 Enquanto o projeto estiver em arquivo local, `/api/readiness` deve retornar bloqueio operacional para piloto real.

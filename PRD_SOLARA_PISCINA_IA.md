@@ -4,7 +4,7 @@
 
 Solara Piscina IA e uma experiencia comercial por token para venda de piscinas. O cliente recebe um link ou QR Code, visualiza pre-imagens do projeto, entende o antes/depois do terreno e envia fotos, medidas e preferencias para iniciar um orcamento mais qualificado.
 
-A versao atual e uma demo funcional publicada em Render Free, com landing publica, painel administrativo basico, captura de leads, upload de fotos, catalogo inicial de upsell e endpoint de IA em modo dry-run.
+A versao atual e um piloto funcional publicado em Render Free, com landing publica, painel administrativo basico, captura de leads em Supabase, upload de fotos em Supabase Storage, catalogo inicial de upsell e endpoint de IA em modo dry-run.
 
 ## 2. Objetivo do produto
 
@@ -135,7 +135,7 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 | RF-06 | Coletar dados de contato | Implementado |
 | RF-07 | Coletar fotos do terreno | Implementado |
 | RF-08 | Coletar medidas e preferencias | Implementado |
-| RF-09 | Salvar lead no servidor | Implementado em arquivo local, com modo Supabase opcional |
+| RF-09 | Salvar lead no servidor | Implementado em Supabase, com fallback local para desenvolvimento |
 | RF-10 | Exibir leads em painel admin | Implementado |
 | RF-11 | Exibir metadados das fotos no admin | Implementado |
 | RF-12 | Cadastrar produtos de upsell | Implementado |
@@ -148,10 +148,10 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 
 - A experiencia deve parecer premium, visual e comercial.
 - O primeiro acesso pode ser mais lento no Render Free.
-- O projeto nao deve prometer producao final sem banco, storage e autenticacao robusta.
+- O projeto nao deve prometer producao final recorrente sem plano, dominio e autenticacao robusta.
 - O codigo deve rodar sem dependencias externas obrigatorias alem do Node.
 - O deploy publico nao deve incluir docs sensiveis, pitch interno ou contexto completo do coordenador.
-- Cliente real recorrente exige Supabase Free ou equivalente para leads e fotos; Render Free com arquivo local deve permanecer apenas como demo ou piloto interno.
+- Cliente real recorrente exige Supabase Free ou equivalente para leads e fotos; Render Free com arquivo local deve permanecer apenas como demo local ou piloto interno.
 - `REQUIRE_PERSISTENT_STORAGE=1` deve bloquear recebimento de leads reais quando Supabase nao estiver configurado.
 
 ## 8. Fora do escopo atual
@@ -159,8 +159,8 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 - CRM completo.
 - Pagamento online.
 - Login administrativo profissional com usuarios, papeis e recuperacao de acesso.
-- Banco de dados definitivo no modo demo em arquivo local.
-- Storage externo definitivo para fotos no modo demo em arquivo local.
+- Banco de dados relacional completo para CRM.
+- Storage externo fora do Supabase configurado.
 - Garantia operacional de obra em 30 dias.
 - Automacao real de busca de endereco.
 - Geracao real de imagem ativada por padrao.
@@ -169,9 +169,9 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 
 - Render Free pode hibernar e causar demora no primeiro acesso.
 - Filesystem do Render Free nao deve ser tratado como armazenamento permanente.
-- `/api/readiness` retorna `503` quando o app esta em modo demo com arquivo local.
+- `/api/readiness` retorna `503` se o app voltar ao modo demo com arquivo local.
 - Token admin simples serve para demo/local; em producao deve vir de `ADMIN_TOKEN` e evoluir para login profissional.
-- Leads e fotos podem migrar para Supabase via variaveis de ambiente; para uso real, manter bucket privado e politica de acesso restrita.
+- Leads e fotos usam Supabase via variaveis de ambiente; para uso real, manter bucket privado e politica de acesso restrita.
 - Premissas comerciais, como prazo de 30 dias, precisam validacao da empresa.
 
 ## 10. Proximos passos recomendados
@@ -179,8 +179,8 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 1. Gravar video curto para coordenador mostrando demo, admin e upsell.
 2. Validar se a narrativa comercial esta aprovada.
 3. Definir se a IA real sera ativada e com qual custo/limite.
-4. Conectar banco de dados para leads e produtos.
-5. Conectar storage externo para fotos.
+4. Validar regras comerciais para leads e produtos no Supabase.
+5. Validar politica de acesso do bucket de fotos.
 6. Substituir token simples por login administrativo.
 7. Criar status comercial do lead: novo, em analise, orcado, fechado, perdido.
 8. Avaliar dominio proprio e plano pago para apresentacao mais estavel.

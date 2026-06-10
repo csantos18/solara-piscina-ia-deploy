@@ -1,6 +1,6 @@
 ﻿# Solara Piscina IA Deploy
 
-Versao publica enxuta da demo Solara Piscina IA, preparada para Render Free Web Service.
+Versao publica enxuta da Solara Piscina IA, preparada para Render Free Web Service com persistencia em Supabase Free.
 
 ## Links publicados
 
@@ -38,8 +38,8 @@ Versao publica enxuta da demo Solara Piscina IA, preparada para Render Free Web 
 - O painel admin lista leads, fotos/metadados e status operacional.
 - O painel admin permite cadastrar produtos complementares/upsell.
 - O catalogo inicial inclui deck premium, moveis externos e painel solar futuro.
-- `/api/health` confirma que o servico esta no ar.
-- `/api/readiness` separa demo de piloto real: retorna `503` enquanto Supabase definitivo nao estiver ativo.
+- `/api/health` confirma que o servico esta no ar e mostra storage em Supabase.
+- `/api/readiness` separa demo de piloto real e deve retornar `200` quando Supabase estiver ativo.
 - A geracao real de imagens fica desativada por padrao.
 - `/api/image-generation/request` retorna payload dry-run sem consumir API. Para chamada real, exige `LITELLM_API_KEY` e `ENABLE_REAL_IMAGE_GENERATION=1`.
 
@@ -48,9 +48,8 @@ Versao publica enxuta da demo Solara Piscina IA, preparada para Render Free Web 
 - Configure `ADMIN_TOKEN` no Render e tambem no ambiente local quando precisar acessar o admin.
 - O servidor aplica headers basicos de seguranca e compara token administrativo com `timingSafeEqual`.
 - O corpo JSON tem limite configuravel por `MAX_JSON_BODY_BYTES`.
-- Leads rodam em arquivo por padrao para manter compatibilidade com Render Free.
-- Para operacao premium inicial, use Supabase Free com tabela `solara_leads` e bucket privado `solara-lead-photos`.
-- Para cliente real ou piloto recorrente, defina `REQUIRE_PERSISTENT_STORAGE=1`, `LEAD_STORE_MODE=supabase` e `STORAGE_MODE=supabase` no Render.
+- No Render, leads e fotos devem rodar em Supabase Free com tabela `solara_leads` e bucket privado `solara-lead-photos`.
+- Para cliente real ou piloto recorrente, mantenha `REQUIRE_PERSISTENT_STORAGE=1`, `LEAD_STORE_MODE=supabase` e `STORAGE_MODE=supabase` no Render.
 - O schema versionado esta em `scripts/supabase-schema.sql`.
 - Valide a conexao antes de virar producao com `npm run check:supabase`.
 
@@ -73,8 +72,8 @@ Credenciais sensiveis devem ser configuradas apenas em ambiente local ou nas var
 ## Limites conhecidos
 
 - Render Free pode dormir e demorar no primeiro acesso.
-- No modo gratuito em arquivo, leads, fotos e produtos nao sao armazenamento definitivo.
-- `/api/readiness` deve continuar retornando `503` enquanto o projeto estiver em modo demo com arquivo local.
+- No modo local em arquivo, leads, fotos e produtos nao sao armazenamento definitivo.
+- `/api/readiness` deve retornar `503` se o projeto voltar ao modo demo com arquivo local.
 - Para producao completa, usar banco real, Supabase Storage ou storage equivalente, e dominio/plano sem hibernacao.
 - Pagamento online e CRM completo ainda nao foram implementados.
 - O prazo de 30 dias deve continuar como premissa comercial a validar pela empresa.
