@@ -64,6 +64,10 @@ try {
   const healthResponse = await expectStatus("/api/health", 200);
   const health = await healthResponse.json();
   if (!health.ok || health.service !== "solara-piscina-ia") throw new Error("Health check invalido.");
+  if (!health.operational || health.operational.profile !== "demo-file-storage") throw new Error("Health check deve expor perfil operacional.");
+  const readinessResponse = await expectStatus("/api/readiness", 503);
+  const readiness = await readinessResponse.json();
+  if (readiness.ok !== false || readiness.operational?.readyForClientPilot !== false) throw new Error("Readiness deve bloquear piloto real sem Supabase.");
   await expectStatus("/api/products", 200);
   await expectStatus("/api/leads", 400, {
     method: "POST",

@@ -24,4 +24,16 @@ Quando uma chave precisar ser substituida:
 
 ## Estado atual recomendado
 
-Supabase pode ficar pausado ate a proxima rodada. Antes de ativar producao, validar tabela, bucket, escrita temporaria e leitura pelo admin.
+Supabase pode ficar pausado ate a proxima rodada de cliente real. Antes de ativar producao ou piloto recorrente, validar tabela, bucket, escrita temporaria e leitura pelo admin.
+
+## Trava de projeto real
+
+Para operacao com cliente real, configurar no Render:
+
+```text
+LEAD_STORE_MODE=supabase
+STORAGE_MODE=supabase
+REQUIRE_PERSISTENT_STORAGE=1
+```
+
+Com `REQUIRE_PERSISTENT_STORAGE=1`, o servidor bloqueia recebimento de leads se Supabase nao estiver configurado com credenciais validas.

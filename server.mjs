@@ -18,8 +18,10 @@ const productionMode = process.env.NODE_ENV === "production";
 const adminToken = String(process.env.ADMIN_TOKEN || "").trim();
 const leadStoreMode = String(process.env.LEAD_STORE_MODE || "file").trim();
 const storageMode = String(process.env.STORAGE_MODE || "file").trim();
+const persistentStorageRequired = process.env.REQUIRE_PERSISTENT_STORAGE === "1";
 const leadFilePath = process.env.LEADS_FILE_PATH || join(root, "leads.jsonl");
 const leadUploadsDir = process.env.LEAD_UPLOADS_DIR || join(root, "lead-uploads");
+const validStorageModes = new Set(["file", "supabase"]);
 
 const securityHeaders = {
   "x-content-type-options": "nosniff",
@@ -151,6 +153,36 @@ function supabaseConfig() {
     url: String(process.env.SUPABASE_URL || "").replace(/\/$/, ""),
     key: String(process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim(),
     bucket: String(process.env.SUPABASE_STORAGE_BUCKET || "solara-lead-photos").trim()
+  };
+}
+
+function hasSupabaseCredentials() {
+  const { url, key } = supabaseConfig();
+  return Boolean(url && key && key !== "substitua_pela_secret_key_local");
+}
+
+function operationalReadiness() {
+  const issues = [];
+  const warnings = [];
+  const supabaseConfigured = hasSupabaseCredentials();
+  const persistentStorageActive = leadStoreMode === "supabase" && storageMode === "supabase" && supabaseConfigured;
+
+  if (!validStorageModes.has(leadStoreMode)) issues.push(`LEAD_STORE_MODE invalido: ${leadStoreMode}`);
+  if (!validStorageModes.has(storageMode)) issues.push(`STORAGE_MODE invalido: ${storageMode}`);
+  if (productionMode && !adminToken) issues.push("ADMIN_TOKEN nao configurado em producao.");
+  if (leadStoreMode === "supabase" && !supabaseConfigured) issues.push("Supabase nao configurado para leads.");
+  if (storageMode === "supabase" && !supabaseConfigured) issues.push("Supabase Storage nao configurado para fotos.");
+  if (!persistentStorageActive) warnings.push("Persistencia definitiva nao ativa: usar apenas como demo ou piloto interno.");
+  if (persistentStorageRequired && !persistentStorageActive) issues.push("REQUIRE_PERSISTENT_STORAGE=1 exige LEAD_STORE_MODE=supabase e STORAGE_MODE=supabase com credenciais validas.");
+
+  return {
+    readyForClientPilot: issues.length === 0 && persistentStorageActive,
+    profile: persistentStorageActive ? "real-free-pilot" : "demo-file-storage",
+    persistentStorageActive,
+    persistentStorageRequired,
+    supabaseConfigured,
+    issues,
+    warnings
   };
 }
 
@@ -292,9 +324,9 @@ async function persistLeadRecord(record) {
 }
 
 function storageStatusNote() {
-  const leadMode = leadStoreMode === "supabase" ? "Supabase" : "arquivo local";
-  const photoMode = storageMode === "supabase" ? "Supabase Storage" : "filesystem local";
-  return `Leads em ${leadMode}; fotos em ${photoMode}. Render Free pode perder arquivos locais ao reiniciar.`;
+  const readiness = operationalReadiness();
+  if (readiness.persistentStorageActive) return "Leads em Supabase; fotos em Supabase Storage. Perfil gratuito pronto para piloto controlado.";
+  return "Leads/fotos em arquivo local. Render Free pode perder arquivos locais ao reiniciar; usar somente como demo.";
 }
 function handleHealth(req, res) {
   json(res, 200, {
@@ -308,8 +340,24 @@ function handleHealth(req, res) {
       photos: storageMode,
       note: storageStatusNote()
     },
+    operational: operationalReadiness(),
     imageGenerationMode: process.env.ENABLE_REAL_IMAGE_GENERATION === "1" ? "real" : "dry-run",
     knownTokens: Object.keys(TOKENS)
+  });
+}
+
+function handleReadiness(req, res) {
+  const readiness = operationalReadiness();
+  json(res, readiness.readyForClientPilot ? 200 : 503, {
+    ok: readiness.readyForClientPilot,
+    service: "solara-piscina-ia",
+    generatedAt: new Date().toISOString(),
+    storage: {
+      leads: leadStoreMode,
+      photos: storageMode,
+      note: storageStatusNote()
+    },
+    operational: readiness
   });
 }
 async function serveFile(req, res) {
@@ -350,6 +398,15 @@ async function serveFile(req, res) {
 }
 
 async function handleLead(req, res) {
+  const readiness = operationalReadiness();
+  if (persistentStorageRequired && !readiness.readyForClientPilot) {
+    json(res, 503, { ok: false, error: "Persistencia definitiva nao configurada para receber leads reais.", operational: readiness });
+    return;
+  }
+  if (!validStorageModes.has(leadStoreMode) || !validStorageModes.has(storageMode)) {
+    json(res, 500, { ok: false, error: "Modo de armazenamento invalido.", operational: readiness });
+    return;
+  }
   const body = await parseBody(req);
   const token = String(body.token || "000000").trim();
   const name = String(body.name || "").trim();
@@ -667,6 +724,10 @@ createServer(async (req, res) => {
 
     if (req.method === "GET" && pathname === "/api/health") {
       handleHealth(req, res);
+      return;
+    }
+    if (req.method === "GET" && pathname === "/api/readiness") {
+      handleReadiness(req, res);
       return;
     }
     if (req.method === "POST" && pathname === "/api/leads") {

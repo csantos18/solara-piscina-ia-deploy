@@ -118,6 +118,8 @@ Nao implementado por padrao:
 - Catalogo publico: `https://solara-piscina-ia.onrender.com/api/products`
 - Repo publico deploy-only: `https://github.com/csantos18/solara-piscina-ia-deploy`
 - Repo privado completo: `https://github.com/csantos18/solara-piscina-ia`
+- Health check: `https://solara-piscina-ia.onrender.com/api/health`
+- Readiness de piloto real: `https://solara-piscina-ia.onrender.com/api/readiness`
 
 Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Render. Nao publicar segredo administrativo em documentacao publica.
 
@@ -140,6 +142,7 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 | RF-13 | Expor catalogo publico de upsell | Implementado |
 | RF-14 | Gerar payload de IA em dry-run | Implementado |
 | RF-15 | Gerar imagem real por IA | Preparado, nao ativado |
+| RF-16 | Expor readiness para diferenciar demo de piloto real | Implementado |
 
 ## 7. Requisitos nao funcionais
 
@@ -148,14 +151,16 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 - O projeto nao deve prometer producao final sem banco, storage e autenticacao robusta.
 - O codigo deve rodar sem dependencias externas obrigatorias alem do Node.
 - O deploy publico nao deve incluir docs sensiveis, pitch interno ou contexto completo do coordenador.
+- Cliente real recorrente exige Supabase Free ou equivalente para leads e fotos; Render Free com arquivo local deve permanecer apenas como demo ou piloto interno.
+- `REQUIRE_PERSISTENT_STORAGE=1` deve bloquear recebimento de leads reais quando Supabase nao estiver configurado.
 
 ## 8. Fora do escopo atual
 
 - CRM completo.
 - Pagamento online.
 - Login administrativo profissional com usuarios, papeis e recuperacao de acesso.
-- Banco de dados definitivo.
-- Storage externo definitivo para fotos.
+- Banco de dados definitivo no modo demo em arquivo local.
+- Storage externo definitivo para fotos no modo demo em arquivo local.
 - Garantia operacional de obra em 30 dias.
 - Automacao real de busca de endereco.
 - Geracao real de imagem ativada por padrao.
@@ -164,6 +169,7 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 
 - Render Free pode hibernar e causar demora no primeiro acesso.
 - Filesystem do Render Free nao deve ser tratado como armazenamento permanente.
+- `/api/readiness` retorna `503` quando o app esta em modo demo com arquivo local.
 - Token admin simples serve para demo/local; em producao deve vir de `ADMIN_TOKEN` e evoluir para login profissional.
 - Leads e fotos podem migrar para Supabase via variaveis de ambiente; para uso real, manter bucket privado e politica de acesso restrita.
 - Premissas comerciais, como prazo de 30 dias, precisam validacao da empresa.
