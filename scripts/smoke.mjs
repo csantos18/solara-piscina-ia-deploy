@@ -69,6 +69,11 @@ try {
   const readiness = await readinessResponse.json();
   if (readiness.ok !== false || readiness.operational?.readyForClientPilot !== false) throw new Error("Readiness deve bloquear piloto real sem Supabase.");
   await expectStatus("/api/products", 200);
+  const landingResponse = await expectStatus("/000000", 200);
+  const landingHtml = await landingResponse.text();
+  if (!landingHtml.includes('data-pool-style="familiar" aria-pressed="true"')) throw new Error("Seletor Familiar deve iniciar ativo e acessivel.");
+  if (!landingHtml.includes('data-pool-style="moderna" aria-pressed="false"')) throw new Error("Seletor Moderna deve iniciar inativo e acessivel.");
+  if (!landingHtml.includes('data-pool-style="lounge" aria-pressed="false"')) throw new Error("Seletor Area Lounge deve iniciar inativo e acessivel.");
   await expectStatus("/api/leads", 400, {
     method: "POST",
     headers: { "content-type": "application/json" },

@@ -86,7 +86,11 @@ function renderGallery(style = "familiar") {
 
 styleButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    styleButtons.forEach((item) => item.classList.toggle("isActive", item === button));
+    styleButtons.forEach((item) => {
+      const selected = item === button;
+      item.classList.toggle("isActive", selected);
+      item.setAttribute("aria-pressed", selected ? "true" : "false");
+    });
     renderGallery(button.dataset.poolStyle);
   });
 });
