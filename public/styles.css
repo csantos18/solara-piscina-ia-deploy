@@ -34,6 +34,21 @@ a {
   color: inherit;
 }
 
+#mainVisual,
+.heroPreview img,
+.previewThumbs img,
+.comparison img,
+.miniCompare img,
+.shot img,
+.renderShots img,
+.flowVisual img,
+.flowCompare img,
+.qrPanel img {
+  -webkit-user-drag: none;
+  pointer-events: none;
+  user-select: none;
+}
+
 .topbar {
   position: fixed;
   top: 0;
