@@ -2387,13 +2387,16 @@ h1 {
 }
 
 .poolStyleSelector button:hover,
-.poolStyleSelector button:focus-visible,
-.poolStyleSelector button.isActive {
+.poolStyleSelector button:focus-visible {
   border-color: rgba(72, 234, 214, 0.72);
   background: rgba(72, 234, 214, 0.17);
   box-shadow: 0 18px 48px rgba(0, 30, 38, 0.34);
-  transform: translateY(-2px);
   outline: none;
+}
+
+.poolStyleSelector button:hover,
+.poolStyleSelector button:focus-visible {
+  transform: translateY(-2px);
 }
 
 .gallery {
@@ -2736,7 +2739,6 @@ body {
 
 .poolStyleSelector button:hover,
 .poolStyleSelector button:focus-visible,
-.poolStyleSelector button.isActive,
 .uploadBox.isDragging,
 .button.ghost:hover,
 .button.ghost:focus-visible,
