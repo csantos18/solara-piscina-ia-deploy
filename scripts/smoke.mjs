@@ -51,6 +51,10 @@ try {
   await waitForServer();
   await expectStatus("/000000", 200);
   await expectStatus("/111111", 200);
+  await expectStatus("/src/tokens.js", 200);
+  await expectStatus("/src/image-generation-config.js", 200);
+  await expectStatus("/images/qr-token-000000.png", 200);
+  await expectStatus("/images/qr-token-111111.png", 200);
   await expectStatus("/badtoken", 404);
   await expectStatus("/admin", 200);
   await expectStatus("/api/products-extra", 404);

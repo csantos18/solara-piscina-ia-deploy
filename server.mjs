@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { IMAGE_GENERATION } from "./src/image-generation-config.js";
 import { TOKENS } from "./src/tokens.js";
 
-const root = fileURLToPath(new URL(".", import.meta.url));
+const root = normalize(fileURLToPath(new URL(".", import.meta.url))).replace(/[\\/]$/, "");
 const publicDir = join(root, "public");
 const port = Number(process.env.PORT || 4173);
 const maxLeadPhotoBytes = Number(process.env.MAX_LEAD_PHOTO_BYTES || 10 * 1024 * 1024);
