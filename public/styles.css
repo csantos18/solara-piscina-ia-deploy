@@ -255,15 +255,20 @@ h3 {
   padding: 0 10px 10px;
 }
 
-.previewThumbs > img {
-  position: static;
+.previewThumb {
+  display: block;
+  overflow: hidden;
+  border-radius: 6px;
+  transition: transform 260ms ease, filter 260ms ease;
+}
+
+.previewThumbs img {
+  display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 1.25;
-  border-radius: 6px;
   object-fit: cover;
   filter: none;
-  pointer-events: auto;
 }
 
 .button {
@@ -937,7 +942,7 @@ footer {
     animation: heroSlowZoom 18s ease-in-out infinite alternate;
   }
 
-  .previewThumbs > img {
+  .previewThumbs > .previewThumb {
     animation: previewThumbFloat 4.2s ease-in-out infinite;
   }
 }
@@ -2352,15 +2357,15 @@ h1 {
   }
 }
 
-.previewThumbs > img,
+.previewThumb,
 .renderShots img,
 .miniCompare img,
 .flowVisual img {
   transition: transform 260ms ease, filter 260ms ease;
 }
 
-.previewThumbs > img:hover,
-.previewThumbs > img:focus-visible,
+.previewThumb:hover,
+.previewThumb:focus-visible,
 .renderShots img:hover,
 .renderShots img:focus-visible,
 .miniCompare:hover img,
@@ -2369,8 +2374,8 @@ h1 {
   transform: translateY(-3px) scale(1.025);
 }
 
-.previewThumbs > img:hover,
-.previewThumbs > img:focus-visible {
+.previewThumb:hover,
+.previewThumb:focus-visible {
   animation: none;
   transform: translateY(-5px) scale(1.03);
 }
