@@ -601,10 +601,12 @@ textarea {
 }
 
 .qrPanel img {
-  width: 98px;
-  height: 98px;
+  width: 112px;
+  height: 112px;
   border-radius: 8px;
   background: white;
+  border: 8px solid white;
+  image-rendering: pixelated;
 }
 
 .qrPanel strong {
@@ -2561,4 +2563,176 @@ h1 {
   .hero .heroContent p:not(.eyebrow) {
     width: min(100%, 31ch);
   }
+}
+
+/* Executive visual pass: restrained premium palette and less visual noise. */
+:root {
+  --ink: #f7faf8;
+  --muted: #b9c8c5;
+  --deep: #071513;
+  --panel: rgba(12, 28, 25, 0.82);
+  --glass: rgba(255, 255, 255, 0.065);
+  --line: rgba(225, 239, 235, 0.16);
+  --aqua: #6fd7c8;
+  --blue: #8fb7d7;
+  --pool: #5fc8bd;
+  --reef: #8ccfb3;
+  --lime: #bdd59a;
+  --sun: #d9b66d;
+  --shadow: 0 22px 70px rgba(0, 12, 14, 0.38);
+}
+
+body {
+  background: linear-gradient(180deg, #0b1d1b 0%, #071513 48%, #0a1412 100%);
+}
+
+.topbar {
+  background: rgba(7, 20, 18, 0.82);
+  border-bottom-color: rgba(225, 239, 235, 0.12);
+  box-shadow: 0 10px 34px rgba(0, 12, 14, 0.22);
+}
+
+.heroOverlay {
+  background:
+    linear-gradient(90deg, rgba(5, 18, 17, 0.92), rgba(8, 29, 28, 0.62) 54%, rgba(8, 30, 31, 0.26)),
+    linear-gradient(0deg, rgba(5, 18, 17, 0.82), transparent 42%);
+}
+
+#mainVisual {
+  filter: saturate(0.82) contrast(1.03) brightness(0.84);
+}
+
+.eyebrow,
+.kicker,
+.heroProof a,
+.dreamMode,
+.compareLabel,
+.flowVisual figcaption,
+.miniCompare span,
+.photoTips span,
+.poolStyleSelector button,
+.topbar span {
+  background: rgba(255, 255, 255, 0.055);
+  border-color: rgba(225, 239, 235, 0.16);
+  box-shadow: none;
+}
+
+.button.primary {
+  border-color: rgba(111, 215, 200, 0.72);
+  background: #6fd7c8;
+  color: #061817;
+  box-shadow: 0 16px 38px rgba(19, 104, 96, 0.26);
+}
+
+.button.primary:hover,
+.button.primary:focus-visible,
+.heroActions .button.primary:hover,
+.heroActions .button.primary:focus-visible {
+  box-shadow: 0 18px 46px rgba(19, 104, 96, 0.32);
+}
+
+.button.ghost,
+.heroActions .button.ghost,
+.uploadButton,
+.cameraButton {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.heroActions .button.primary {
+  border-color: rgba(111, 215, 200, 0.72);
+  box-shadow: 0 16px 42px rgba(19, 104, 96, 0.26);
+}
+
+.summary,
+.valueBand,
+.trustRail {
+  background: rgba(225, 239, 235, 0.12);
+}
+
+.summary div,
+.trustRail div,
+.shot,
+.miniCompare,
+.productFlowGrid article,
+.leadForm,
+.qrPanel,
+.endpointBox,
+.process article,
+.valueItem,
+.futureGrid article,
+.renderStatus,
+.uploadBox,
+.finalStep,
+.productCard,
+.leadCard {
+  background: rgba(12, 28, 25, 0.72);
+}
+
+.compareBand,
+.galleryBand,
+.promptBand,
+.promptBand.technical,
+.aiPreviewBand,
+.upgradeBand,
+.leadBand,
+.split,
+.productFlowBand {
+  background: linear-gradient(180deg, #0a1b19, #071513);
+}
+
+.galleryCta,
+.finalStep,
+.simulationGate,
+.aiProcessingVisual,
+.proposalNote {
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.galleryBand::after,
+.leadBand::after {
+  display: none;
+}
+
+.renderStatus span,
+.aiProgress i,
+.resultFlowCard h3::after,
+.uploadBox::after,
+.flowCompareHandle,
+.compareHandle {
+  background: #6fd7c8;
+}
+
+.premiumGold,
+.button.premiumGold {
+  border-color: rgba(217, 182, 109, 0.68);
+  background: #d9b66d;
+  color: #071513;
+  box-shadow: 0 16px 34px rgba(119, 84, 24, 0.18);
+}
+
+.poolStyleSelector button:hover,
+.poolStyleSelector button:focus-visible,
+.poolStyleSelector button.isActive,
+.uploadBox.isDragging,
+.button.ghost:hover,
+.button.ghost:focus-visible,
+.productFlowGrid article:hover,
+.productFlowGrid article:focus-within,
+.shot:hover,
+.shot:focus-within,
+.process article:hover,
+.process article:focus-within,
+.valueItem:hover,
+.valueItem:focus-within,
+.futureGrid article:hover,
+.futureGrid article:focus-within,
+.adminStats article:hover,
+.adminStats article:focus-within,
+.productCard:hover,
+.productCard:focus-within,
+.leadCard:hover,
+.leadCard:focus-within {
+  border-color: rgba(111, 215, 200, 0.48);
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: 0 18px 48px rgba(0, 12, 14, 0.32);
 }

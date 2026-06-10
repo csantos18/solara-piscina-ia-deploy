@@ -30,7 +30,7 @@ const securityHeaders = {
     "default-src 'self'",
     "script-src 'self'",
     "style-src 'self'",
-    "img-src 'self' data: blob: https://api.qrserver.com",
+    "img-src 'self' data: blob:",
     "connect-src 'self'",
     "object-src 'none'",
     "base-uri 'self'",

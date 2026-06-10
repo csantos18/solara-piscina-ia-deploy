@@ -10,8 +10,7 @@ document.querySelector("#productName").textContent = tokenData.productName;
 document.querySelector("#regionName").textContent = tokenData.region;
 document.querySelector("#mainVisual").src = tokenData.heroImage || tokenData.images[0].src;
 document.querySelector("#qrTarget").textContent = absoluteTokenUrl;
-document.querySelector("#qrImage").src =
-  `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(absoluteTokenUrl)}`;
+document.querySelector("#qrImage").src = `/images/qr-token-${tokenData.token}.png`;
 
 const heroEyebrow = document.querySelector("#heroEyebrow");
 const heroPreview = document.querySelector("#heroPreview");
