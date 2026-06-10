@@ -31,6 +31,7 @@ if (!apiKey) {
 const envVars = {
   LEAD_STORE_MODE: "supabase",
   STORAGE_MODE: "supabase",
+  REQUIRE_PERSISTENT_STORAGE: "1",
   SUPABASE_URL: String(process.env.SUPABASE_URL).replace(/\/$/, ""),
   SUPABASE_SERVICE_ROLE_KEY: String(process.env.SUPABASE_SERVICE_ROLE_KEY).trim(),
   SUPABASE_STORAGE_BUCKET: String(process.env.SUPABASE_STORAGE_BUCKET || "solara-lead-photos").trim(),

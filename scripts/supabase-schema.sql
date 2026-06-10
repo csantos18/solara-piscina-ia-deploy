@@ -18,6 +18,10 @@ create index if not exists solara_leads_token_idx
 comment on table public.solara_leads is 'Leads comerciais recebidos pela landing Solara Piscina IA.';
 comment on column public.solara_leads.payload is 'Payload completo do formulario, incluindo metadados das fotos.';
 
+grant usage on schema public to service_role;
+grant select, insert, delete on table public.solara_leads to service_role;
+grant usage, select on sequence public.solara_leads_id_seq to service_role;
+
 -- Storage: crie um bucket privado chamado solara-lead-photos.
 -- Pelo Dashboard: Storage > New bucket > solara-lead-photos > Public bucket desativado.
 -- A aplicacao usa SUPABASE_SERVICE_ROLE_KEY no servidor para gravar e ler fotos com rota admin autenticada.
