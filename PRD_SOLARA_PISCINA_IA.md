@@ -179,10 +179,9 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 
 ## 10. Proximos passos recomendados
 
-1. Revisar a landing publica contra o briefing do coordenador, sem adicionar escopo novo.
-2. Validar se a narrativa comercial esta aprovada.
-3. Definir se o folder PDF com QR Code ainda entra nesta fase.
-4. Definir se o admin precisa cadastrar prospect/token/imagens agora ou em fase posterior.
-5. Validar politica de acesso do bucket de fotos.
-6. Definir se a IA real sera ativada e com qual custo/limite.
-7. Avaliar dominio proprio e plano pago para apresentacao mais estavel.
+1. Validar se a narrativa comercial esta aprovada.
+2. Definir se o folder PDF com QR Code ainda entra nesta fase.
+3. Definir se o admin precisa cadastrar prospect/token/imagens agora ou em fase posterior.
+4. Validar politica de acesso do bucket de fotos.
+5. Definir se a IA real sera ativada e com qual custo/limite.
+6. Avaliar dominio proprio e plano pago para apresentacao mais estavel.
