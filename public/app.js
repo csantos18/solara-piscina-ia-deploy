@@ -1,4 +1,61 @@
-﻿import { TOKENS } from "/src/tokens.js";
+const baseImages = [
+  {
+    id: "pool-dream",
+    label: "Piscina moderna com agua cristalina",
+    src: "/images/pool-project.jpeg",
+    description: "Imagem premium para ativar a sensacao de que a piscina ja pertence a casa."
+  },
+  {
+    id: "pool-3d",
+    label: "Render arquitetonico de alto padrao",
+    src: "/images/pool-3d.jpeg",
+    description: "Render arquitetonico para antecipar volume, acabamento e experiencia visual."
+  },
+  {
+    id: "top-view",
+    label: "Piscina com deck e circulacao planejada",
+    src: "/images/pool-top-view.jpeg",
+    description: "Vista superior para entender piscina, deck, circulacao e proporcao do espaco."
+  },
+  {
+    id: "satellite-before",
+    label: "Base do terreno para comparacao",
+    src: "/images/satellite-original.png",
+    description: "Registro inicial do terreno para reforcar o antes e depois personalizado."
+  },
+  {
+    id: "satellite-after",
+    label: "Vista aerea com piscina inserida",
+    src: "/images/satellite-pool-after.jpeg",
+    description: "Antecipacao visual da piscina inserida no ambiente do cliente."
+  }
+];
+
+const TOKENS = {
+  "000000": {
+    token: "000000",
+    productName: "Piscina Premium com IA Visual",
+    region: "Florida",
+    heroImage: "/images/pool-project.jpeg",
+    images: baseImages
+  },
+  "111111": {
+    token: "111111",
+    productName: "Piscina Familiar com Area Lounge",
+    region: "Projeto demo residencial",
+    heroImage: "/images/pool-project.jpeg",
+    images: [baseImages[1], baseImages[2], baseImages[0], baseImages[4], baseImages[3]].map((image) => ({
+      ...image,
+      description: {
+        "pool-3d": "Pre-imagem inicial para uma familia visualizar piscina com leitura moderna e area rasa.",
+        "top-view": "A vista superior ajuda a discutir proporcao entre piscina, deck e circulacao familiar.",
+        "pool-dream": "Referencia aspiracional para mostrar lazer, valorizacao da casa e uso aos finais de semana.",
+        "satellite-after": "Simulacao por cima para mostrar como o projeto pode ocupar o terreno.",
+        "satellite-before": "Imagem base antes da simulacao, preservada para comparacao do cliente."
+      }[image.id] || image.description
+    }))
+  }
+};
 
 const pathToken = window.location.pathname.replace("/", "").trim();
 const activeToken = pathToken || "000000";
@@ -54,9 +111,9 @@ const gallery = document.querySelector("#gallery");
 const styleButtons = document.querySelectorAll("[data-pool-style]");
 const dreamModes = ["Dia claro", "Pôr do sol", "Noite com luzes", "Revestimento claro", "Paisagismo", "Vista aérea"];
 const stylePriority = {
-  familiar: ["pool-3d", "pool-dream", "top-view", "satellite-after", "solar-upsell", "satellite-before"],
-  moderna: ["pool-dream", "pool-3d", "solar-upsell", "top-view", "satellite-after", "satellite-before"],
-  lounge: ["top-view", "pool-dream", "pool-3d", "satellite-after", "solar-upsell", "satellite-before"]
+  familiar: ["pool-3d", "pool-dream", "top-view", "satellite-after", "satellite-before"],
+  moderna: ["pool-dream", "pool-3d", "top-view", "satellite-after", "satellite-before"],
+  lounge: ["top-view", "pool-dream", "pool-3d", "satellite-after", "satellite-before"]
 };
 
 function orderedImages(style = "familiar") {
@@ -242,4 +299,3 @@ document.querySelectorAll(".button").forEach((button) => {
     window.setTimeout(() => button.classList.remove("isLoading"), 720);
   });
 });
-

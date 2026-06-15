@@ -4,9 +4,9 @@
 
 Solara Piscina IA e uma experiencia comercial por token para venda de piscinas. O cliente recebe um link ou QR Code, visualiza pre-imagens do projeto, entende o antes/depois do terreno e envia fotos, medidas e preferencias para iniciar um orcamento mais qualificado.
 
-A versao atual deve seguir estritamente o material enviado pelo coordenador em `contexto-devs-piscinas-ia`: foco em uma landing page maravilhosa por token, captura de dados para orcamento e preparacao controlada para IA futura. Recursos de CRM completo, pagamento, cadastro de produtos e upsell ficam fora da entrega principal.
+A versao atual segue o briefing original: foco em uma landing page visual por token, captura de dados para orcamento e preparacao controlada para IA futura. Recursos de CRM completo, pagamento, cadastro de produtos e upsell ficam fora da entrega principal.
 
-Fontes de escopo do coordenador:
+Fontes de escopo:
 
 - `landingpage-draft.md`;
 - `proposta-comercial-piscinas-ia.html`;
@@ -31,7 +31,7 @@ Objetivos principais:
 - Vendedores que precisam qualificar leads antes de contato direto.
 - Coordenadores comerciais que precisam acompanhar demonstracoes e leads recebidos.
 
-## 4. Escopo combinado com o coordenador
+## 4. Escopo combinado
 
 ### 4.1 Entrega principal: landing por token
 
@@ -149,7 +149,7 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 - O primeiro acesso pode ser mais lento no Render Free.
 - O projeto nao deve prometer producao final recorrente sem plano, dominio e autenticacao robusta.
 - O codigo deve rodar sem dependencias externas obrigatorias alem do Node.
-- O deploy publico nao deve incluir docs sensiveis, pitch interno ou contexto completo do coordenador.
+- O deploy publico nao deve incluir docs sensiveis, pitch interno ou contexto completo do briefing.
 - Cliente real recorrente exige Supabase Free ou equivalente para leads e fotos; Render Free com arquivo local deve permanecer apenas como demo local ou piloto interno.
 - `REQUIRE_PERSISTENT_STORAGE=1` deve bloquear recebimento de leads reais quando Supabase nao estiver configurado.
 - Textos publicos nao devem prometer engenharia, garantia, prazo de obra ou resultado tecnico sem validacao da empresa.

@@ -365,7 +365,7 @@ async function serveFile(req, res) {
     res.end("Token não encontrado. Use /000000 para a demo principal.");
     return;
   }
-  const baseDir = requestedPath.startsWith("/src/") ? root : publicDir;
+  const baseDir = publicDir;
   const filePath = normalize(join(baseDir, requestedPath));
 
   if (!isPathInside(filePath, baseDir)) {
@@ -440,6 +440,7 @@ async function handleLead(req, res) {
 }
 
 async function handleImageRequest(req, res) {
+  if (!requireAdmin(req, res)) return;
   const body = await parseBody(req);
   const token = body.token || "000000";
   const tokenConfig = TOKENS[token] || TOKENS["000000"];
@@ -496,11 +497,10 @@ async function handleImageRequest(req, res) {
 }
 
 function adminTokenFrom(req) {
-  const url = new URL(req.url, `http://${req.headers.host}`);
   const headerToken = req.headers["x-admin-token"] || "";
   const auth = req.headers.authorization || "";
   const bearer = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-  return String(headerToken || bearer || url.searchParams.get("token") || "").trim();
+  return String(headerToken || bearer || "").trim();
 }
 
 function requireAdmin(req, res) {

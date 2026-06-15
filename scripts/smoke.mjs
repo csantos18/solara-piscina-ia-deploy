@@ -51,8 +51,8 @@ try {
   await waitForServer();
   await expectStatus("/000000", 200);
   await expectStatus("/111111", 200);
-  await expectStatus("/src/tokens.js", 200);
-  await expectStatus("/src/image-generation-config.js", 200);
+  await expectStatus("/src/tokens.js", 404);
+  await expectStatus("/src/image-generation-config.js", 404);
   await expectStatus("/images/qr-token-000000.png", 200);
   await expectStatus("/images/qr-token-111111.png", 200);
   await expectStatus("/badtoken", 404);
@@ -154,9 +154,15 @@ try {
   const photoType = photoResponse.headers.get("content-type") || "";
   if (!photoType.startsWith("image/png")) throw new Error(`Foto protegida retornou content-type invalido: ${photoType}`);
 
-  const imageResponse = await expectStatus("/api/image-generation/request", 200, {
+  await expectStatus("/api/image-generation/request", 401, {
     method: "POST",
     headers: { "content-type": "application/json" },
+    body: JSON.stringify({ token: "000000", promptKey: "poolDream" })
+  });
+
+  const imageResponse = await expectStatus("/api/image-generation/request", 200, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-admin-token": adminToken },
     body: JSON.stringify({ token: "000000", promptKey: "poolDream" })
   });
   const image = await imageResponse.json();
