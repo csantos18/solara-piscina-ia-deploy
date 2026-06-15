@@ -52,32 +52,6 @@ function secureEquals(a, b) {
   const right = Buffer.from(String(b || ""));
   return left.length === right.length && timingSafeEqual(left, right);
 }
-const defaultUpsellProducts = [
-  {
-    id: "deck-premium",
-    name: "Deck premium atérmico",
-    category: "Acabamento",
-    priceNote: "Sob orçamento",
-    status: "ativo",
-    description: "Complemento para área de circulação ao redor da piscina."
-  },
-  {
-    id: "moveis-externos",
-    name: "Móveis externos",
-    category: "Pós-orçamento",
-    priceNote: "A definir",
-    status: "planejado",
-    description: "Linha de espreguiçadeiras, mesas e apoio para etapa posterior à venda da piscina."
-  },
-  {
-    id: "painel-solar",
-    name: "Painel solar futuro",
-    category: "Energia",
-    priceNote: "A definir",
-    status: "planejado",
-    description: "Produto complementar para proposta futura, sem tirar foco do orçamento da piscina."
-  }
-];
 const rotasReservadas = new Set([
   "/rota-reservada-1",
   "/rota-reservada-2",
@@ -698,64 +672,6 @@ async function handleAdminLeadStatus(req, res) {
   json(res, 200, { ok: true, lead: leadPublicSummary(updated, 0) });
 }
 
-async function readUpsellProducts() {
-  try {
-    const text = await readFile(join(root, "upsell-products.json"), "utf8");
-    const products = JSON.parse(text);
-    return Array.isArray(products) ? products : defaultUpsellProducts;
-  } catch (error) {
-    if (error.code !== "ENOENT") throw error;
-    return defaultUpsellProducts;
-  }
-}
-
-async function writeUpsellProducts(products) {
-  await writeFile(join(root, "upsell-products.json"), JSON.stringify(products, null, 2), "utf8");
-}
-
-function normalizeProduct(body) {
-  const now = new Date().toISOString();
-  const id = safeUploadName(body.id || body.name || `produto-${Date.now()}`).toLowerCase();
-  return {
-    id,
-    name: String(body.name || "Produto sem nome").trim(),
-    category: String(body.category || "Complemento").trim(),
-    priceNote: String(body.priceNote || "Sob orçamento").trim(),
-    status: String(body.status || "planejado").trim(),
-    description: String(body.description || "").trim(),
-    updatedAt: now
-  };
-}
-
-async function handleAdminProducts(req, res) {
-  if (!requireAdmin(req, res)) return;
-  if (req.method === "GET") {
-    const products = await readUpsellProducts();
-    json(res, 200, { ok: true, products });
-    return;
-  }
-  if (req.method === "POST") {
-    const body = await parseBody(req);
-    const products = await readUpsellProducts();
-    const product = normalizeProduct(body);
-    const next = [product, ...products.filter((item) => item.id !== product.id)];
-    await writeUpsellProducts(next);
-    json(res, 201, { ok: true, product, products: next });
-    return;
-  }
-  res.writeHead(405, headers());
-  res.end("Method not allowed");
-}
-
-async function handlePublicProducts(req, res) {
-  const products = await readUpsellProducts();
-  json(res, 200, {
-    ok: true,
-    mode: "catalog-preview",
-    note: "Catalogo complementar para etapa posterior ao orçamento da piscina.",
-    products: products.filter((product) => product.status !== "interno")
-  });
-}
 async function serveSupabasePhoto(storedAs, res) {
   const { key, bucket } = supabaseConfig();
   const prefix = `supabase://${bucket}/`;
@@ -838,16 +754,8 @@ createServer(async (req, res) => {
       await handleAdminLeadStatus(req, res);
       return;
     }
-    if (pathname === "/api/admin/products") {
-      await handleAdminProducts(req, res);
-      return;
-    }
     if (req.method === "GET" && pathname === "/api/admin/photo") {
       await handleAdminPhoto(req, res);
-      return;
-    }
-    if (req.method === "GET" && pathname === "/api/products") {
-      await handlePublicProducts(req, res);
       return;
     }
     if (req.method === "POST" && pathname === "/api/image-generation/request") {

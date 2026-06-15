@@ -68,7 +68,7 @@ try {
   const readinessResponse = await expectStatus("/api/readiness", 503);
   const readiness = await readinessResponse.json();
   if (readiness.ok !== false || readiness.operational?.readyForClientPilot !== false) throw new Error("Readiness deve bloquear piloto real sem Supabase.");
-  await expectStatus("/api/products", 200);
+  await expectStatus("/api/products", 404);
   const landingResponse = await expectStatus("/000000", 200);
   const landingHtml = await landingResponse.text();
   if (!landingHtml.includes('data-pool-style="familiar" aria-pressed="true"')) throw new Error("Seletor Familiar deve iniciar ativo e acessivel.");

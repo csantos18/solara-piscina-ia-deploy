@@ -4,7 +4,13 @@
 
 Solara Piscina IA e uma experiencia comercial por token para venda de piscinas. O cliente recebe um link ou QR Code, visualiza pre-imagens do projeto, entende o antes/depois do terreno e envia fotos, medidas e preferencias para iniciar um orcamento mais qualificado.
 
-A versao atual e um piloto funcional publicado em Render Free, com landing publica, painel administrativo basico, captura de leads em Supabase, upload de fotos em Supabase Storage, catalogo inicial de upsell e endpoint de IA em modo dry-run.
+A versao atual deve seguir estritamente o material enviado pelo coordenador em `contexto-devs-piscinas-ia`: foco em uma landing page maravilhosa por token, captura de dados para orcamento e preparacao controlada para IA futura. Recursos de CRM completo, pagamento, cadastro de produtos e upsell ficam fora da entrega principal.
+
+Fontes de escopo do coordenador:
+
+- `landingpage-draft.md`;
+- `proposta-comercial-piscinas-ia.html`;
+- imagens do pacote `contexto-devs-piscinas-ia`.
 
 ## 2. Objetivo do produto
 
@@ -16,31 +22,31 @@ Objetivos principais:
 - personalizar a experiencia por token do prospect;
 - coletar dados suficientes para orientar o orcamento;
 - preparar a evolucao para simulacao real por IA;
-- permitir que vendedor/coordenador acompanhe leads e oportunidades;
-- abrir caminho para upsell depois do orcamento principal.
+- permitir acompanhamento basico dos leads recebidos;
+- manter upsell apenas como etapa futura depois do orcamento da piscina.
 
 ## 3. Publico-alvo
 
 - Clientes interessados em construir piscina residencial.
 - Vendedores que precisam qualificar leads antes de contato direto.
-- Coordenadores comerciais que precisam acompanhar demonstracoes, leads e status do funil.
+- Coordenadores comerciais que precisam acompanhar demonstracoes e leads recebidos.
 
-## 4. Escopo implementado
+## 4. Escopo combinado com o coordenador
 
-### 4.1 Landing por token
+### 4.1 Entrega principal: landing por token
 
 - Token principal: `/000000`.
-- Token secundario: `/111111`.
-- Conteudo visual muda por token.
+- Acesso direto por `base_url/token`.
+- Possibilidade de outros tokens em etapa seguinte.
 - Hero premium com imagem de piscina.
 - Galeria de pre-imagens.
 - Comparativo antes/depois com imagem de satelite.
 - QR Code apontando para a pagina do token.
-- Secao de fluxo comercial usando imagens do video/demo.
+- Foco em vender a piscina antes da primeira visita tecnica.
 
 ### 4.2 Formulario de orcamento
 
-Campos implementados:
+Campos esperados:
 
 - nome;
 - WhatsApp;
@@ -49,18 +55,12 @@ Campos implementados:
 - largura disponivel;
 - comprimento disponivel;
 - tamanho desejado da piscina;
-- tipo de solo;
 - estilo desejado;
-- formato preferido;
-- profundidade ou uso principal;
-- area disponivel aproximada;
 - preferencia de revestimento;
-- deck e entorno;
-- objetivo visual;
-- local/regiao opcional;
-- preferencia principal opcional.
+- preferencias gerais para melhorar a simulacao futura;
+- local/regiao opcional.
 
-### 4.3 Painel administrativo
+### 4.3 Painel administrativo basico
 
 Rota:
 
@@ -79,29 +79,16 @@ Funcionalidades:
 - observacao de storage;
 - listagem de leads;
 - dados comerciais do lead;
-- status comercial do lead: novo, em analise, orcado, fechado ou perdido;
 - metadados de fotos enviadas;
 - abertura protegida de fotos no painel admin.
 
-### 4.4 Catalogo de upsell
+O status comercial simples pode ajudar a operacao interna, mas nao deve transformar a entrega em CRM completo.
 
-Funcionalidades:
+### 4.4 IA visual
 
-- cadastro simples de produto complementar no painel admin;
-- listagem de produtos no painel;
-- API publica de catalogo preview em `/api/products`.
+Implementado como preparacao controlada:
 
-Produtos iniciais:
-
-- Deck premium atermico;
-- Moveis externos;
-- Painel solar futuro.
-
-### 4.5 IA visual
-
-Implementado:
-
-- prompts rastreaveis em `src/tokens.js`;
+- prompts rastreaveis;
 - configuracao LiteLLM em `src/image-generation-config.js`;
 - endpoint `/api/image-generation/request`;
 - modo dry-run por padrao.
@@ -112,12 +99,21 @@ Nao implementado por padrao:
 - consumo automatico de API;
 - cobranca por geracao.
 
+### 4.5 Futuro, nao entrega principal
+
+- Upsell de moveis externos, painel solar e outros produtos.
+- Cadastro de produtos.
+- Pagamento online.
+- CRM completo.
+- Busca automatizada de enderecos.
+- Folder PDF pronto para impressao.
+- Modulo de campanhas por regiao, bairro ou ZIP code.
+
 ## 5. Links atuais
 
 - Demo principal: `https://solara-piscina-ia.onrender.com/000000`
 - Demo secundaria: `https://solara-piscina-ia.onrender.com/111111`
 - Painel admin: `https://solara-piscina-ia.onrender.com/admin`
-- Catalogo publico: `https://solara-piscina-ia.onrender.com/api/products`
 - Repo publico deploy-only: `https://github.com/csantos18/solara-piscina-ia-deploy`
 - Repo privado completo: `https://github.com/csantos18/solara-piscina-ia`
 - Health check: `https://solara-piscina-ia.onrender.com/api/health`
@@ -130,7 +126,7 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 | ID | Requisito | Status |
 | --- | --- | --- |
 | RF-01 | Abrir landing pelo token `000000` | Implementado |
-| RF-02 | Abrir landing alternativa pelo token `111111` | Implementado |
+| RF-02 | Abrir landing alternativa pelo token `111111` | Implementado como demonstracao adicional |
 | RF-03 | Exibir galeria de pre-imagens | Implementado |
 | RF-04 | Exibir antes/depois do terreno | Implementado |
 | RF-05 | Gerar QR Code do token | Implementado |
@@ -139,10 +135,10 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 | RF-08 | Coletar medidas e preferencias | Implementado |
 | RF-09 | Salvar lead no servidor | Implementado em Supabase, com fallback local para desenvolvimento |
 | RF-10 | Exibir leads em painel admin | Implementado |
-| RF-10.1 | Atualizar status comercial do lead | Implementado |
+| RF-10.1 | Atualizar status comercial simples do lead | Implementado como apoio interno, nao CRM |
 | RF-11 | Exibir metadados e abrir fotos protegidas no admin | Implementado |
-| RF-12 | Cadastrar produtos de upsell | Implementado |
-| RF-13 | Expor catalogo publico de upsell | Implementado |
+| RF-12 | Gerar folder PDF com QR Code | Pendente |
+| RF-13 | Cadastrar prospect/token/imagens pelo admin | Pendente |
 | RF-14 | Gerar payload de IA em dry-run | Implementado |
 | RF-15 | Gerar imagem real por IA | Preparado, nao ativado |
 | RF-16 | Expor readiness para diferenciar demo de piloto real | Implementado |
@@ -156,6 +152,7 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 - O deploy publico nao deve incluir docs sensiveis, pitch interno ou contexto completo do coordenador.
 - Cliente real recorrente exige Supabase Free ou equivalente para leads e fotos; Render Free com arquivo local deve permanecer apenas como demo local ou piloto interno.
 - `REQUIRE_PERSISTENT_STORAGE=1` deve bloquear recebimento de leads reais quando Supabase nao estiver configurado.
+- Textos publicos nao devem prometer engenharia, garantia, prazo de obra ou resultado tecnico sem validacao da empresa.
 
 ## 8. Fora do escopo atual
 
@@ -167,23 +164,25 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 - Garantia operacional de obra em 30 dias.
 - Automacao real de busca de endereco.
 - Geracao real de imagem ativada por padrao.
+- Cadastro de produtos como funcionalidade de entrega principal.
+- Upsell como etapa ativa antes do orcamento da piscina.
+- Impressao fisica, postagem, midia paga ou compra de bases.
 
 ## 9. Riscos e limitacoes
 
 - Render Free pode hibernar e causar demora no primeiro acesso.
 - Filesystem do Render Free nao deve ser tratado como armazenamento permanente.
 - `/api/readiness` retorna `503` se o app voltar ao modo demo com arquivo local.
-- Token admin simples serve para demo/local; em producao deve vir de `ADMIN_TOKEN` e evoluir para login profissional.
+- Token admin simples serve para demo/local; em producao deve vir de `ADMIN_TOKEN` e evoluir para login profissional se o piloto virar operacao recorrente.
 - Leads e fotos usam Supabase via variaveis de ambiente; para uso real, manter bucket privado e politica de acesso restrita.
 - Premissas comerciais, como prazo de 30 dias, precisam validacao da empresa.
 
 ## 10. Proximos passos recomendados
 
-1. Gravar video curto para coordenador mostrando demo, admin e upsell.
+1. Revisar a landing publica contra o briefing do coordenador, sem adicionar escopo novo.
 2. Validar se a narrativa comercial esta aprovada.
-3. Definir se a IA real sera ativada e com qual custo/limite.
-4. Validar regras comerciais para leads e produtos no Supabase.
+3. Definir se o folder PDF com QR Code ainda entra nesta fase.
+4. Definir se o admin precisa cadastrar prospect/token/imagens agora ou em fase posterior.
 5. Validar politica de acesso do bucket de fotos.
-6. Substituir token simples por login administrativo.
-7. Evoluir status comercial com filtros, historico de mudanca e responsavel pelo atendimento.
-8. Avaliar dominio proprio e plano pago para apresentacao mais estavel.
+6. Definir se a IA real sera ativada e com qual custo/limite.
+7. Avaliar dominio proprio e plano pago para apresentacao mais estavel.

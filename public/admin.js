@@ -3,8 +3,6 @@ const tokenInput = document.querySelector("#adminToken");
 const statusBox = document.querySelector("#adminStatus");
 const statsBox = document.querySelector("#adminStats");
 const leadsList = document.querySelector("#leadsList");
-const productForm = document.querySelector("#productForm");
-const productsList = document.querySelector("#productsList");
 
 const storedToken = sessionStorage.getItem("solaraAdminToken") || "";
 if (storedToken) {
@@ -200,7 +198,6 @@ async function loadAdmin(token) {
 
     sessionStorage.setItem("solaraAdminToken", token);
     renderStats(result.stats);
-    await loadProducts(token);
     leadsList.innerHTML = result.leads.length
       ? result.leads.map(leadMarkup).join("")
       : `<div class="emptyState">Nenhum lead recebido ainda.</div>`;
@@ -217,52 +214,4 @@ async function loadAdmin(token) {
 login.addEventListener("submit", (event) => {
   event.preventDefault();
   loadAdmin(tokenInput.value.trim());
-});
-
-function productMarkup(product) {
-  return `
-    <article class="productCard">
-      <div>
-        <span>${safe(product.category, "Complemento")} · ${safe(product.status, "planejado")}</span>
-        <h3>${safe(product.name, "Produto sem nome")}</h3>
-        <p>${safe(product.description, "Sem descrição.")}</p>
-      </div>
-      <strong>${safe(product.priceNote, "Sob orçamento")}</strong>
-    </article>
-  `;
-}
-
-async function loadProducts(token) {
-  const response = await fetch("/api/admin/products", {
-    headers: { "x-admin-token": token }
-  });
-  const result = await response.json();
-  if (!response.ok || !result.ok) throw new Error(result.error || "Falha ao carregar produtos.");
-  productsList.innerHTML = result.products.length
-    ? result.products.map(productMarkup).join("")
-    : `<div class="emptyState">Nenhum produto cadastrado.</div>`;
-}
-
-productForm?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const token = tokenInput.value.trim();
-  const payload = Object.fromEntries(new FormData(productForm).entries());
-  statusBox.textContent = "Salvando produto...";
-  try {
-    const response = await fetch("/api/admin/products", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-admin-token": token
-      },
-      body: JSON.stringify(payload)
-    });
-    const result = await response.json();
-    if (!response.ok || !result.ok) throw new Error(result.error || "Falha ao salvar produto.");
-    productForm.reset();
-    productsList.innerHTML = result.products.map(productMarkup).join("");
-    statusBox.textContent = "Produto salvo no catálogo de upsell.";
-  } catch (error) {
-    statusBox.textContent = error.message;
-  }
 });

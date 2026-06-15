@@ -15,17 +15,16 @@ Nao duplicar escopo, roadmap ou checklist operacional em novos documentos. Atual
 - Demo principal: `https://solara-piscina-ia.onrender.com/000000`
 - Demo secundaria: `https://solara-piscina-ia.onrender.com/111111`
 - Painel admin: `https://solara-piscina-ia.onrender.com/admin`
-- Catalogo publico: `https://solara-piscina-ia.onrender.com/api/products`
 - Health check: `https://solara-piscina-ia.onrender.com/api/health`
 - Readiness: `https://solara-piscina-ia.onrender.com/api/readiness`
 
 ## Arquivos principais
 
-- `server.mjs` - servidor Node, rotas publicas, leads, admin, produtos, fotos protegidas e dry-run de IA.
+- `server.mjs` - servidor Node, rotas publicas, leads, admin, fotos protegidas e dry-run de IA.
 - `public/index.html` - landing page por token.
 - `public/admin.html` - painel comercial.
 - `public/app.js` - experiencia da landing, formulario e upload.
-- `public/admin.js` - leads, status comercial, fotos protegidas e produtos.
+- `public/admin.js` - leads, status comercial simples e fotos protegidas.
 - `public/styles.css` - visual responsivo.
 - `src/tokens.js` - dados dos tokens e prompts.
 - `render.yaml` - configuracao do Render.
