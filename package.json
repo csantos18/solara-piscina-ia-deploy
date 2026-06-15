@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.mjs",
-    "check": "node --check server.mjs && node --check public/app.js && node --check public/admin.js && node --check src/tokens.js && node --check src/image-generation-config.js && node scripts/smoke.mjs",
+    "check": "node --check server.mjs && node --check public/app.js && node --check public/admin.js && node --check src/tokens.js && node --check src/image-generation-config.js && node scripts/check-build.mjs && node scripts/check-smoke.mjs && node scripts/smoke.mjs",
     "check:supabase": "node scripts/check-supabase.mjs",
     "check:supabase:local": "node scripts/with-env-file.mjs .env.supabase.local npm.cmd run check:supabase",
     "check:supabase:write": "node scripts/with-env-file.mjs .env.supabase.local npm.cmd run check:supabase",

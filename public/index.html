@@ -81,7 +81,7 @@
         </div>
         <div>
           <strong>Proposta sob avaliacao</strong>
-          <span>Prazo, viabilidade e condicoes sao confirmados pela equipe comercial.</span>
+          <span>Prazo, viabilidade e condições são confirmados pela equipe comercial.</span>
         </div>
       </section>
 
@@ -89,7 +89,7 @@
         <div class="sectionHead">
           <p class="kicker">Visão superior</p>
           <h2>Mostre o potencial do espaço antes da visita técnica.</h2>
-          <p>A vista por cima ajuda o cliente a entender proporção, área livre, piscina, circulação e proposta visual inicial.</p>
+          <p>A vista por cima ajuda o cliente a entender proporção, Área livre, piscina, circulação e proposta visual inicial.</p>
         </div>
         <div class="comparison" id="comparison">
           <img class="compareImage after" src="/images/satellite-pool-after.jpeg" alt="Vista superior com piscina simulada">
@@ -200,13 +200,14 @@
         <div class="sectionHead">
           <p class="kicker">Galeria personalizada por token</p>
           <h2>Uma primeira curadoria visual pensada para este cliente.</h2>
-          <p>Cada token pode carregar imagens iniciais diferentes: borda infinita, deck, visual noturno, vista aérea ou outra direção de desejo. A sensação precisa ser: isso já foi pensado para mim.</p>
+          <p>Cada token pode carregar imagens iniciais diferentes: borda infinita, deck, visual noturno, vista aÁrea ou outra direção de desejo. A sensação precisa ser: isso já foi pensado para mim.</p>
         </div>
         <div class="poolStyleSelector" aria-label="Escolha um estilo de piscina">
           <button class="isActive" type="button" data-pool-style="familiar" aria-pressed="true">Familiar</button>
           <button type="button" data-pool-style="moderna" aria-pressed="false">Moderna</button>
           <button type="button" data-pool-style="lounge" aria-pressed="false">Área Lounge</button>
         </div>
+        <div class="styleNarrative" id="styleNarrative" aria-live="polite"></div>
         <div class="gallery" id="gallery"></div>
         <div class="galleryCta">
           <div>
@@ -231,16 +232,16 @@
           </div>
           <div class="renderShots">
             <img src="/images/pool-3d.jpeg" alt="Preview 3D da piscina personalizada">
-            <img src="/images/pool-top-view.jpeg" alt="Preview aéreo da piscina personalizada">
-            <img src="/images/pool-project.jpeg" alt="Preview premium da área externa com piscina">
+            <img src="/images/pool-top-view.jpeg" alt="Preview a?reo da piscina personalizada">
+            <img src="/images/pool-project.jpeg" alt="Preview premium da Área externa com piscina">
           </div>
         </div>
       </section>
 
       <section class="valueBand" id="valor">
         <div class="valueItem">
-          <strong>Prazo sob proposta</strong>
-          <span>Prazos e condicoes sao confirmados no orcamento final.</span>
+          <strong>Entrega em até 30 dias</strong>
+          <span>Premissa comercial validada antes da proposta final.</span>
         </div>
         <div class="valueItem">
           <strong>Medição e viabilidade</strong>
@@ -261,7 +262,7 @@
           <p class="kicker">Simulação + orçamento</p>
           <h2>Sua piscina está quase pronta para ser vista no seu terreno.</h2>
           <p>
-            Antes de pedir contato, a página mostra o valor visual: pré-imagem, comparação antes/depois e o caminho para gerar uma simulação mais fiel com fotos, medidas e revestimento.
+            Antes de pedir contato, a p?gina mostra o valor visual: pr?-imagem, compara??o antes/depois e o caminho para gerar uma simula??o mais fiel com fotos, medidas e revestimento.
           </p>
           <div class="leadStory" aria-label="Prévia antes e depois">
             <div class="miniCompare">
@@ -274,16 +275,20 @@
             </div>
           </div>
           <div class="simulationValue" aria-label="Valor da simulação">
-            <span>Prazo definido na proposta comercial</span>
+            <span>Entrega em at? 30 dias com confirma??o comercial</span>
             <span>Viabilidade tecnica na avaliacao</span>
             <span>Simulação personalizada por IA futura</span>
           </div>
-          <div class="qrPanel">
-            <img id="qrImage" alt="QR Code do token demo">
-            <div>
-              <strong>QR Code do token</strong>
-              <span id="qrTarget">/000000</span>
+          <div class="tokenCard" aria-label="Token atual do projeto">
+            <div class="tokenCardHeader">
+              <span>Token atual</span>
+              <strong class="tokenCardStatus">Ativo</strong>
             </div>
+            <strong class="tokenCardNumber" id="tokenCardNumber">000000</strong>
+            <img id="qrImage" alt="QR Code do token demo">
+            <span class="tokenCardLinkLabel" id="qrTarget">Link do token</span>
+            <button class="tokenCopyButton" id="copyTokenLink" type="button">Copiar link do token</button>
+            <p id="tokenCopyStatus" class="tokenCopyStatus" role="status"></p>
           </div>
         </div>
         <form id="leadForm" class="leadForm">
@@ -389,7 +394,7 @@
               Profundidade ou uso principal
               <select name="depthPreference">
                 <option>Família e lazer</option>
-                <option>Crianças e área rasa</option>
+                <option>Crianças e Área rasa</option>
                 <option>Nado e exercício</option>
                 <option>Visual premium / resort</option>
               </select>
@@ -421,7 +426,7 @@
           </div>
           <label>
             O que você quer sentir ao ver a piscina pronta?
-            <textarea name="visualGoal" rows="3" placeholder="Ex.: área moderna para receber amigos, piscina familiar, visual de resort, valorização da casa"></textarea>
+            <textarea name="visualGoal" rows="3" placeholder="Ex.: Área moderna para receber amigos, piscina familiar, visual de resort, valorização da casa"></textarea>
           </label>
           <details class="optionalFields">
             <summary>Adicionar local e detalhes opcionais</summary>
@@ -434,17 +439,45 @@
               <select name="interest">
                 <option>Piscina completa</option>
                 <option>Piscina com revestimento premium</option>
-                <option>Piscina + área externa</option>
+                <option>Piscina + Área externa</option>
 
 
               </select>
             </label>
           </details>
           <button class="button primary submitButton" type="submit">Receber orçamento personalizado</button>
-          <span class="quickReply">Último passo para aproximar a simulação do seu terreno real. O prazo e as condicoes sao confirmados pela empresa antes da proposta final.</span>
+          <span class="quickReply">Último passo para aproximar a simulação do seu terreno real. O prazo e as condições são confirmados pela empresa antes da proposta final.</span>
           </div>
           <p class="formStatus" id="formStatus" role="status"></p>
         </form>
+      </section>
+
+      <section class="upgradeBand" id="futuro">
+        <div class="sectionHead">
+          <p class="kicker">Depois do orçamento</p>
+          <h2>A página vende a piscina primeiro. Os complementos entram depois.</h2>
+          <p>Quando o cliente receber o orçamento e avançar na decisão, podem aparecer móveis externos, painel solar e outros produtos. Cadastro de produtos, pagamento online e CRM completo ficam para outra etapa.</p>
+        </div>
+        <div class="futureGrid">
+          <article>
+            <span>Agora</span>
+            <h3>Landing page maravilhosa</h3>
+            <p>Imagens por token, QR Code, fotos do terreno, medidas, preferências e contato para orçamento.</p>
+          </article>
+          <article>
+            <span>IA futura</span>
+            <h3>Novas imagens com dados do cliente</h3>
+            <p>Após receber fotos, medidas, revestimento, formato e objetivo visual, a IA pode recriar imagens mais fiéis ao espaço real.</p>
+          </article>
+          <article>
+            <span>Depois</span>
+            <h3>Upsell sem confundir a venda</h3>
+            <p>Móveis externos, painel solar e outros itens entram somente depois do orçamento da piscina.</p>
+          </article>
+        </div>
+        <div class="proposalNote">
+          <strong>Limite claro:</strong> esta primeira vers?o n?o promete pagamento, CRM completo, cadastro de produtos ou obra garantida em 30 dias. O foco ? gerar desejo e pedido de or?amento.
+        </div>
       </section>
     </main>
 

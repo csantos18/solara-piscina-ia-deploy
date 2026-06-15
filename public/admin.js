@@ -11,6 +11,7 @@ if (storedToken) {
 }
 
 function text(value, fallback = "-") {
+  if (value === 0) return "0";
   return String(value || "").trim() || fallback;
 }
 
@@ -56,6 +57,10 @@ const leadStatusOptions = [
 
 function leadStatusLabel(status) {
   return leadStatusOptions.find(([value]) => value === status)?.[1] || "Novo";
+}
+
+function leadStatusIcon(status) {
+  return status === "novo" ? "+" : "";
 }
 
 function leadStatusSelect(lead) {
@@ -111,8 +116,11 @@ function leadMarkup(lead) {
           <h3>${safe(lead.name, "Lead sem nome")}</h3>
         </div>
         <div class="leadCardActions">
-          <strong class="leadStatusBadge status-${safe(lead.status || "novo")}">${safe(leadStatusLabel(lead.status || "novo"))}</strong>
-          <strong>Token ${safe(lead.token)}</strong>
+          <div class="leadTokenBlock" aria-label="Token atual ${safe(lead.token)}">
+            <span>Token atual</span>
+            <strong>${safe(lead.token)}</strong>
+          </div>
+          <strong class="leadStatusBadge status-${safe(lead.status || "novo")}"><span>${safe(leadStatusIcon(lead.status || "novo"))}</span>${safe(leadStatusLabel(lead.status || "novo"))}</strong>
         </div>
       </div>
       ${leadStatusSelect(lead)}

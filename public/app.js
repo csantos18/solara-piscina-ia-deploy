@@ -41,7 +41,7 @@ const TOKENS = {
   },
   "111111": {
     token: "111111",
-    productName: "Piscina Familiar com Area Lounge",
+    productName: "Piscina Familiar com Área Lounge",
     region: "Projeto demo residencial",
     heroImage: "/images/pool-project.jpeg",
     images: [baseImages[1], baseImages[2], baseImages[0], baseImages[4], baseImages[3]].map((image) => ({
@@ -66,8 +66,31 @@ document.querySelector("#tokenBadge").textContent = `Token ${tokenData.token}`;
 document.querySelector("#productName").textContent = tokenData.productName;
 document.querySelector("#regionName").textContent = tokenData.region;
 document.querySelector("#mainVisual").src = tokenData.heroImage || tokenData.images[0].src;
-document.querySelector("#qrTarget").textContent = absoluteTokenUrl;
+const tokenLinkLabel = document.querySelector("#qrTarget");
+tokenLinkLabel.textContent = "Link do token";
+tokenLinkLabel.title = absoluteTokenUrl;
+document.querySelector("#tokenCardNumber").textContent = tokenData.token;
 document.querySelector("#qrImage").src = `/images/qr-token-${tokenData.token}.png`;
+const copyTokenLink = document.querySelector("#copyTokenLink");
+const tokenCopyStatus = document.querySelector("#tokenCopyStatus");
+const tokenCopyDefaultLabel = copyTokenLink?.textContent || "Copiar link do token";
+let tokenCopyTimer;
+copyTokenLink?.addEventListener("click", async () => {
+  window.clearTimeout(tokenCopyTimer);
+  try {
+    await navigator.clipboard.writeText(absoluteTokenUrl);
+    copyTokenLink.textContent = "Copiado!";
+    copyTokenLink.classList.add("isCopied");
+    tokenCopyStatus.textContent = "Link copiado com sucesso.";
+    tokenCopyTimer = window.setTimeout(() => {
+      copyTokenLink.textContent = tokenCopyDefaultLabel;
+      copyTokenLink.classList.remove("isCopied");
+      tokenCopyStatus.textContent = "";
+    }, 2000);
+  } catch {
+    tokenCopyStatus.textContent = absoluteTokenUrl;
+  }
+});
 
 const heroEyebrow = document.querySelector("#heroEyebrow");
 const heroPreview = document.querySelector("#heroPreview");
@@ -109,34 +132,99 @@ compareRange?.addEventListener("input", () => {
 
 const gallery = document.querySelector("#gallery");
 const styleButtons = document.querySelectorAll("[data-pool-style]");
-const dreamModes = ["Dia claro", "Pôr do sol", "Noite com luzes", "Revestimento claro", "Paisagismo", "Vista aérea"];
-const stylePriority = {
-  familiar: ["pool-3d", "pool-dream", "top-view", "satellite-after", "satellite-before"],
-  moderna: ["pool-dream", "pool-3d", "top-view", "satellite-after", "satellite-before"],
-  lounge: ["top-view", "pool-dream", "pool-3d", "satellite-after", "satellite-before"]
+const styleNarrative = document.querySelector("#styleNarrative");
+const styleProfiles = {
+  familiar: {
+    title: "Familiar",
+    subtitle: "Convivência, segurança e uso diário.",
+    body: "A curadoria prioriza área rasa, leitura de circulação, crianças por perto e uma piscina fácil de imaginar na rotina da casa.",
+    cta: "Ideal para transformar o quintal em ponto de encontro da família.",
+    order: ["pool-3d", "top-view", "pool-dream", "satellite-after", "satellite-before"],
+    badges: ["Uso diário", "Área rasa", "Circulação", "Antes e depois", "Terreno atual"],
+    descriptions: {
+      "pool-3d": "Mostra volume, borda e área rasa com leitura clara para uso familiar e acompanhamento de crianças.",
+      "top-view": "Ajuda a entender circulação, deck e espaço livre para brincar, sentar e receber sem apertar o quintal.",
+      "pool-dream": "Traduz o desejo da família: lazer em casa, fim de semana resolvido e piscina como centro da convivência.",
+      "satellite-after": "Mostra como a piscina pode ocupar o terreno sem perder passagem, deck e area de apoio.",
+      "satellite-before": "Preserva a base atual para comparar o que muda antes de avançar para visita técnica."
+    }
+  },
+  moderna: {
+    title: "Moderna",
+    subtitle: "Linhas limpas, acabamento premium e valorização da casa.",
+    body: "A curadoria prioriza impacto visual, revestimento claro, iluminação e uma leitura mais arquitetônica para vender desejo e valor percebido.",
+    cta: "Ideal para quem quer uma piscina com aparência sofisticada desde a primeira imagem.",
+    order: ["pool-dream", "pool-3d", "satellite-after", "top-view", "satellite-before"],
+    badges: ["Visual premium", "Render", "Implantação", "Layout", "Base real"],
+    descriptions: {
+      "pool-dream": "Abre com a imagem mais aspiracional para vender acabamento, agua cristalina e sensacao de casa valorizada.",
+      "pool-3d": "Reforça linhas retas, bordas, proporção e acabamento para uma conversa mais arquitetônica.",
+      "satellite-after": "Mostra a piscina inserida no terreno como uma melhoria visual de alto impacto.",
+      "top-view": "Organiza deck, espelho d'água e circulação com foco em composição limpa e moderna.",
+      "satellite-before": "Mantém o ponto de partida real para comparar o salto visual da proposta."
+    }
+  },
+  lounge: {
+    title: "Área Lounge",
+    subtitle: "Deck, descanso, paisagismo e receber amigos.",
+    body: "A curadoria prioriza implantação, espreguiçadeiras, deck, área de permanência e clima de resort residencial.",
+    cta: "Ideal para vender a piscina como experiência social, não apenas como obra.",
+    order: ["top-view", "satellite-after", "pool-dream", "pool-3d", "satellite-before"],
+    badges: ["Deck", "Resort em casa", "Convivência", "Ambiente", "Antes"],
+    descriptions: {
+      "top-view": "Começa pela vista superior para discutir deck, espreguiçadeiras, mesa, caminho e área de descanso.",
+      "satellite-after": "Mostra a piscina como núcleo de uma área externa completa para receber amigos.",
+      "pool-dream": "Traz a emoção do lounge pronto: água, sol, acabamento e clima de feriado em casa.",
+      "pool-3d": "Ajuda a visualizar profundidade, borda e volumes que sustentam a experiencia de lounge.",
+      "satellite-before": "Mostra o terreno original para deixar claro o potencial de transformacao da area externa."
+    }
+  }
 };
 
+function selectedProfile(style = "familiar") {
+  return styleProfiles[style] || styleProfiles.familiar;
+}
+
 function orderedImages(style = "familiar") {
-  const order = stylePriority[style] || stylePriority.familiar;
+  const order = selectedProfile(style).order;
   return [...tokenData.images].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+}
+
+function renderStyleNarrative(style = "familiar") {
+  if (!styleNarrative) return;
+  const profile = selectedProfile(style);
+  styleNarrative.innerHTML = `
+    <div>
+      <span>${escapeHtml(profile.title)}</span>
+      <strong>${escapeHtml(profile.subtitle)}</strong>
+      <p>${escapeHtml(profile.body)}</p>
+    </div>
+    <em>${escapeHtml(profile.cta)}</em>
+  `;
 }
 
 function renderGallery(style = "familiar") {
   gallery.classList.add("isRefreshing");
+  const profile = selectedProfile(style);
   const images = orderedImages(style);
+  renderStyleNarrative(style);
   window.setTimeout(() => {
-    gallery.innerHTML = images.map((image, index) => `
-      <article class="shot" tabindex="0">
-        <div class="shotMedia">
-          <img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.label)}" loading="lazy">
-          <span class="dreamMode">${escapeHtml(dreamModes[index % dreamModes.length])}</span>
-        </div>
-        <div>
-          <h3>${escapeHtml(image.label)}</h3>
-          <p>${escapeHtml(image.description || "Referência visual para ajudar o cliente a imaginar a piscina pronta.")}</p>
-        </div>
-      </article>
-    `).join("");
+    gallery.innerHTML = images.map((image, index) => {
+      const badge = profile.badges[index] || profile.title;
+      const description = profile.descriptions[image.id] || image.description || "Referência visual para ajudar o cliente a imaginar a piscina pronta.";
+      return `
+        <article class="shot" tabindex="0">
+          <div class="shotMedia">
+            <img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.label)}" loading="lazy">
+            <span class="dreamMode">${escapeHtml(badge)}</span>
+          </div>
+          <div>
+            <h3>${escapeHtml(image.label)}</h3>
+            <p>${escapeHtml(description)}</p>
+          </div>
+        </article>
+      `;
+    }).join("");
     gallery.classList.remove("isRefreshing");
   }, 120);
 }
