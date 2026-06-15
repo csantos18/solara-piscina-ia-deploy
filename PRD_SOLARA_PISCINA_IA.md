@@ -1,4 +1,4 @@
-﻿# PRD - Solara Piscina IA
+# PRD - Solara Piscina IA
 
 ## 1. Visao geral
 
@@ -79,7 +79,9 @@ Funcionalidades:
 - observacao de storage;
 - listagem de leads;
 - dados comerciais do lead;
-- metadados de fotos enviadas.
+- status comercial do lead: novo, em analise, orcado, fechado ou perdido;
+- metadados de fotos enviadas;
+- abertura protegida de fotos no painel admin.
 
 ### 4.4 Catalogo de upsell
 
@@ -137,7 +139,8 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 | RF-08 | Coletar medidas e preferencias | Implementado |
 | RF-09 | Salvar lead no servidor | Implementado em Supabase, com fallback local para desenvolvimento |
 | RF-10 | Exibir leads em painel admin | Implementado |
-| RF-11 | Exibir metadados das fotos no admin | Implementado |
+| RF-10.1 | Atualizar status comercial do lead | Implementado |
+| RF-11 | Exibir metadados e abrir fotos protegidas no admin | Implementado |
 | RF-12 | Cadastrar produtos de upsell | Implementado |
 | RF-13 | Expor catalogo publico de upsell | Implementado |
 | RF-14 | Gerar payload de IA em dry-run | Implementado |
@@ -182,7 +185,5 @@ Token admin: deve ser configurado por variavel de ambiente `ADMIN_TOKEN` no Rend
 4. Validar regras comerciais para leads e produtos no Supabase.
 5. Validar politica de acesso do bucket de fotos.
 6. Substituir token simples por login administrativo.
-7. Criar status comercial do lead: novo, em analise, orcado, fechado, perdido.
+7. Evoluir status comercial com filtros, historico de mudanca e responsavel pelo atendimento.
 8. Avaliar dominio proprio e plano pago para apresentacao mais estavel.
-
-

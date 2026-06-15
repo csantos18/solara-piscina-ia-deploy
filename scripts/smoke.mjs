@@ -92,6 +92,7 @@ try {
   await expectStatus("/000000", 200);
 
   const maliciousName = '<img src=x onerror="alert(1)">';
+  const validPngDataUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAFgwJ/lVgB6wAAAABJRU5ErkJggg==";
   const leadResponse = await expectStatus("/api/leads", 201, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -99,16 +100,24 @@ try {
       token: "000000",
       name: maliciousName,
       phone: "+550000000000",
-      photos: [{
-        name: "vetor.svg",
-        type: "image/svg+xml",
-        size: 80,
-        dataUrl: "data:image/svg+xml;base64,PHN2ZyBvbmxvYWQ9ImFsZXJ0KDEpIi8+"
-      }]
+      photos: [
+        {
+          name: "vetor.svg",
+          type: "image/svg+xml",
+          size: 80,
+          dataUrl: "data:image/svg+xml;base64,PHN2ZyBvbmxvYWQ9ImFsZXJ0KDEpIi8+"
+        },
+        {
+          name: "foto-terreno.png",
+          type: "image/png",
+          size: 68,
+          dataUrl: validPngDataUrl
+        }
+      ]
     })
   });
   const lead = await leadResponse.json();
-  if (lead.record?.photoFilesSaved !== 0) throw new Error("SVG nao deve ser salvo como foto de lead.");
+  if (lead.record?.photoFilesSaved !== 1) throw new Error("Somente PNG valido deve ser salvo como foto de lead.");
 
   const adminResponse = await expectStatus("/api/admin/leads", 200, {
     headers: { "x-admin-token": adminToken }
@@ -116,6 +125,34 @@ try {
   const admin = await adminResponse.json();
   if (!admin.ok || !Array.isArray(admin.leads)) throw new Error("Admin nao retornou lista de leads.");
   if (!admin.stats?.storageNote) throw new Error("Admin nao retornou nota de storage.");
+  const createdLead = admin.leads.find((item) => item.name === maliciousName);
+  if (!createdLead?.id) throw new Error("Admin nao retornou ID do lead.");
+  if (createdLead.status !== "novo") throw new Error("Lead novo deve iniciar com status comercial novo.");
+
+  const statusResponse = await expectStatus("/api/admin/leads/status", 200, {
+    method: "PATCH",
+    headers: {
+      "content-type": "application/json",
+      "x-admin-token": adminToken
+    },
+    body: JSON.stringify({ id: createdLead.id, status: "orcado" })
+  });
+  const statusResult = await statusResponse.json();
+  if (statusResult.lead?.status !== "orcado") throw new Error("Status comercial nao foi atualizado para orcado.");
+
+  const updatedAdminResponse = await expectStatus("/api/admin/leads", 200, {
+    headers: { "x-admin-token": adminToken }
+  });
+  const updatedAdmin = await updatedAdminResponse.json();
+  const updatedLead = updatedAdmin.leads.find((item) => item.id === createdLead.id);
+  if (updatedLead?.status !== "orcado") throw new Error("Admin nao persistiu status comercial atualizado.");
+  const storedPhoto = updatedLead.photos.find((photo) => photo.stored && photo.storedAs);
+  if (!storedPhoto) throw new Error("Admin nao retornou foto armazenada para abertura.");
+  const photoResponse = await expectStatus(`/api/admin/photo?file=${encodeURIComponent(storedPhoto.storedAs)}`, 200, {
+    headers: { "x-admin-token": adminToken }
+  });
+  const photoType = photoResponse.headers.get("content-type") || "";
+  if (!photoType.startsWith("image/png")) throw new Error(`Foto protegida retornou content-type invalido: ${photoType}`);
 
   const imageResponse = await expectStatus("/api/image-generation/request", 200, {
     method: "POST",

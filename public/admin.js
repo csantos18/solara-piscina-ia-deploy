@@ -1,4 +1,4 @@
-﻿const login = document.querySelector("#adminLogin");
+const login = document.querySelector("#adminLogin");
 const tokenInput = document.querySelector("#adminToken");
 const statusBox = document.querySelector("#adminStatus");
 const statsBox = document.querySelector("#adminStats");
@@ -48,6 +48,31 @@ function formatBytes(value) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
 
+const leadStatusOptions = [
+  ["novo", "Novo"],
+  ["em_analise", "Em análise"],
+  ["orcado", "Orçado"],
+  ["fechado", "Fechado"],
+  ["perdido", "Perdido"]
+];
+
+function leadStatusLabel(status) {
+  return leadStatusOptions.find(([value]) => value === status)?.[1] || "Novo";
+}
+
+function leadStatusSelect(lead) {
+  const current = lead.status || "novo";
+  const options = leadStatusOptions.map(([value, label]) => `
+    <option value="${value}"${value === current ? " selected" : ""}>${label}</option>
+  `).join("");
+  return `
+    <label class="leadStatusControl">
+      Status comercial
+      <select data-lead-status data-lead-id="${safe(lead.id)}" aria-label="Status comercial de ${safe(lead.name, "lead")}">${options}</select>
+    </label>
+  `;
+}
+
 function renderStats(stats = {}) {
   statsBox.innerHTML = [
     ["Leads", stats.totalLeads ?? 0],
@@ -66,11 +91,13 @@ function renderStats(stats = {}) {
 
 function photoMarkup(photo, index) {
   const status = photo.stored ? "salva" : "não salva";
+  const storedAs = String(photo.storedAs || "");
   return `
     <li>
       <strong>${safe(photo.name, `foto-${index + 1}`)}</strong>
       <span>${status} · ${safe(photo.type, "tipo indefinido")} · ${formatBytes(photo.size)}</span>
-      ${photo.storedAs ? `<code>${safe(photo.storedAs)}</code>` : ""}
+      ${storedAs ? `<code>${safe(storedAs)}</code>` : ""}
+      ${photo.stored && storedAs ? `<button class="photoOpenButton" type="button" data-photo-file="${safe(storedAs)}">Abrir foto</button>` : ""}
       ${photo.note ? `<em>${safe(photo.note)}</em>` : ""}
       ${photo.error ? `<em>${safe(photo.error)}</em>` : ""}
     </li>
@@ -85,8 +112,12 @@ function leadMarkup(lead) {
           <span>${formatDate(lead.receivedAt)}</span>
           <h3>${safe(lead.name, "Lead sem nome")}</h3>
         </div>
-        <strong>Token ${safe(lead.token)}</strong>
+        <div class="leadCardActions">
+          <strong class="leadStatusBadge status-${safe(lead.status || "novo")}">${safe(leadStatusLabel(lead.status || "novo"))}</strong>
+          <strong>Token ${safe(lead.token)}</strong>
+        </div>
       </div>
+      ${leadStatusSelect(lead)}
       <div class="leadGrid">
         <div><span>WhatsApp</span><strong>${safe(lead.phone)}</strong></div>
         <div><span>Email</span><strong>${safe(lead.email)}</strong></div>
@@ -106,6 +137,58 @@ function leadMarkup(lead) {
   `;
 }
 
+function bindPhotoButtons(token) {
+  document.querySelectorAll("[data-photo-file]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      statusBox.textContent = "Abrindo foto do lead...";
+      try {
+        const response = await fetch(`/api/admin/photo?file=${encodeURIComponent(button.dataset.photoFile)}`, {
+          headers: { "x-admin-token": token }
+        });
+        if (!response.ok) throw new Error("Foto não encontrada ou acesso negado.");
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank", "noopener,noreferrer");
+        window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        statusBox.textContent = "Foto aberta em nova aba.";
+      } catch (error) {
+        statusBox.textContent = error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+  });
+}
+function bindLeadStatusControls(token) {
+  document.querySelectorAll("[data-lead-status]").forEach((select) => {
+    select.addEventListener("change", async () => {
+      const previous = select.dataset.previous || select.defaultValue || "novo";
+      select.disabled = true;
+      statusBox.textContent = "Atualizando status comercial...";
+      try {
+        const response = await fetch("/api/admin/leads/status", {
+          method: "PATCH",
+          headers: {
+            "content-type": "application/json",
+            "x-admin-token": token
+          },
+          body: JSON.stringify({ id: select.dataset.leadId, status: select.value })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.error || "Falha ao atualizar status.");
+        await loadAdmin(token);
+        statusBox.textContent = `Status atualizado para ${leadStatusLabel(select.value)}.`;
+      } catch (error) {
+        select.value = previous;
+        select.disabled = false;
+        statusBox.textContent = error.message;
+      }
+    });
+    select.dataset.previous = select.value;
+  });
+}
+
 async function loadAdmin(token) {
   statusBox.textContent = "Carregando painel...";
   try {
@@ -121,6 +204,8 @@ async function loadAdmin(token) {
     leadsList.innerHTML = result.leads.length
       ? result.leads.map(leadMarkup).join("")
       : `<div class="emptyState">Nenhum lead recebido ainda.</div>`;
+    bindLeadStatusControls(token);
+    bindPhotoButtons(token);
     statusBox.textContent = `Atualizado em ${formatDate(result.generatedAt)}.`;
   } catch (error) {
     statsBox.innerHTML = "";
@@ -181,6 +266,3 @@ productForm?.addEventListener("submit", async (event) => {
     statusBox.textContent = error.message;
   }
 });
-
-
-

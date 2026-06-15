@@ -1,4 +1,4 @@
-﻿import { createServer } from "node:http";
+import { createServer } from "node:http";
 import { readFile, stat, appendFile, mkdir, writeFile } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import { tmpdir } from "node:os";
@@ -22,6 +22,7 @@ const persistentStorageRequired = process.env.REQUIRE_PERSISTENT_STORAGE === "1"
 const leadFilePath = process.env.LEADS_FILE_PATH || join(root, "leads.jsonl");
 const leadUploadsDir = process.env.LEAD_UPLOADS_DIR || join(root, "lead-uploads");
 const validStorageModes = new Set(["file", "supabase"]);
+const leadStatuses = new Set(["novo", "em_analise", "orcado", "fechado", "perdido"]);
 
 const securityHeaders = {
   "x-content-type-options": "nosniff",
@@ -294,7 +295,7 @@ async function readLeadsFromSupabase() {
   const table = String(process.env.SUPABASE_LEADS_TABLE || "solara_leads").trim();
   if (!url || !key) throw new Error("Supabase nao configurado para leitura de leads.");
 
-  const response = await fetch(`${url}/rest/v1/${table}?select=payload&order=received_at.desc&limit=200`, {
+  const response = await fetch(`${url}/rest/v1/${table}?select=id,payload&order=received_at.desc&limit=200`, {
     headers: {
       "apikey": key,
       "authorization": `Bearer ${key}`,
@@ -303,7 +304,11 @@ async function readLeadsFromSupabase() {
   });
   if (!response.ok) throw new Error(`Falha ao ler leads no Supabase: ${response.status}`);
   const rows = await response.json();
-  return Array.isArray(rows) ? rows.map((row) => row.payload).filter(Boolean) : [];
+  return Array.isArray(rows) ? rows.map((row) => ({
+    ...(row.payload || {}),
+    storageRecordId: String(row.id || ""),
+    status: normalizeLeadStatus(row.payload?.status)
+  })).filter((record) => record.receivedAt) : [];
 }
 
 async function persistLeadRecord(record) {
@@ -327,6 +332,15 @@ function storageStatusNote() {
   const readiness = operationalReadiness();
   if (readiness.persistentStorageActive) return "Leads em Supabase; fotos em Supabase Storage. Perfil gratuito pronto para piloto controlado.";
   return "Leads/fotos em arquivo local. Render Free pode perder arquivos locais ao reiniciar; usar somente como demo.";
+}
+
+function normalizeLeadStatus(status) {
+  const value = String(status || "novo").trim().toLowerCase();
+  return leadStatuses.has(value) ? value : "novo";
+}
+
+function leadRecordId(record, index) {
+  return String(record.leadId || record.storageRecordId || `${record.receivedAt || "lead"}-${index + 1}`);
 }
 function handleHealth(req, res) {
   json(res, 200, {
@@ -422,8 +436,10 @@ async function handleLead(req, res) {
   const receivedAt = new Date().toISOString();
   const photos = await persistLeadPhotos(body.photos, receivedAt);
   const record = {
+    leadId: `lead-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     receivedAt,
     token,
+    status: "novo",
     name,
     phone,
     email: body.email || "",
@@ -527,9 +543,10 @@ function requireAdmin(req, res) {
 
 function leadPublicSummary(record, index) {
   return {
-    id: `${record.receivedAt || "lead"}-${index + 1}`,
+    id: leadRecordId(record, index),
     receivedAt: record.receivedAt || "",
     token: record.token || "",
+    status: normalizeLeadStatus(record.status),
     name: record.name || "",
     phone: record.phone || "",
     email: record.email || "",
@@ -601,6 +618,84 @@ async function handleAdminLeads(req, res) {
     },
     leads
   });
+}
+
+async function saveLeadStatusToSupabase(id, status) {
+  const url = String(process.env.SUPABASE_URL || "").replace(/\/$/, "");
+  const key = String(process.env.SUPABASE_SERVICE_ROLE_KEY || "").trim();
+  const table = String(process.env.SUPABASE_LEADS_TABLE || "solara_leads").trim();
+  if (!url || !key) throw new Error("Supabase nao configurado para atualizar lead.");
+
+  const records = await readLeadsFromSupabase();
+  const record = records.find((item, index) => leadRecordId(item, index) === id);
+  if (!record?.storageRecordId) {
+    const error = new Error("Lead nao encontrado para atualizacao.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const payload = { ...record, status };
+  delete payload.storageRecordId;
+
+  const response = await fetch(`${url}/rest/v1/${table}?id=eq.${encodeURIComponent(record.storageRecordId)}`, {
+    method: "PATCH",
+    headers: {
+      "apikey": key,
+      "authorization": `Bearer ${key}`,
+      "content-type": "application/json",
+      "prefer": "return=minimal"
+    },
+    body: JSON.stringify({ payload })
+  });
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => "");
+    throw new Error(`Falha ao atualizar status no Supabase: ${response.status} ${detail}`.trim());
+  }
+
+  return payload;
+}
+
+async function saveLeadStatusToFile(id, status) {
+  const records = await readLeadRecords();
+  let updated = null;
+  const nextRecords = records.map((record, index) => {
+    if (leadRecordId(record, index) !== id) return record;
+    updated = { ...record, status };
+    return updated;
+  });
+
+  if (!updated) {
+    const error = new Error("Lead nao encontrado para atualizacao.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  await writeFile(leadFilePath, nextRecords.map((record) => JSON.stringify(record)).join("\n") + "\n", "utf8");
+  return updated;
+}
+
+async function handleAdminLeadStatus(req, res) {
+  if (!requireAdmin(req, res)) return;
+  const body = await parseBody(req);
+  const id = String(body.id || "").trim();
+  const requestedStatus = String(body.status || "").trim().toLowerCase();
+  const status = normalizeLeadStatus(requestedStatus);
+
+  if (!id) {
+    json(res, 400, { ok: false, error: "ID do lead e obrigatorio." });
+    return;
+  }
+  if (!leadStatuses.has(requestedStatus)) {
+    json(res, 400, { ok: false, error: "Status comercial invalido." });
+    return;
+  }
+
+  const updated = leadStoreMode === "supabase"
+    ? await saveLeadStatusToSupabase(id, status)
+    : await saveLeadStatusToFile(id, status);
+
+  json(res, 200, { ok: true, lead: leadPublicSummary(updated, 0) });
 }
 
 async function readUpsellProducts() {
@@ -700,8 +795,9 @@ async function handleAdminPhoto(req, res) {
     return;
   }
 
-  const uploadsDir = leadUploadsDir;
-  const filePath = normalize(join(root, storedAs));
+  const uploadsDir = normalize(leadUploadsDir);
+  const relativePhotoPath = storedAs.slice("lead-uploads/".length);
+  const filePath = normalize(join(uploadsDir, relativePhotoPath));
   if (!isPathInside(filePath, uploadsDir)) {
     res.writeHead(403, headers({ "content-type": "text/plain; charset=utf-8" }));
     res.end("Forbidden");
@@ -738,6 +834,10 @@ createServer(async (req, res) => {
       await handleAdminLeads(req, res);
       return;
     }
+    if (req.method === "PATCH" && pathname === "/api/admin/leads/status") {
+      await handleAdminLeadStatus(req, res);
+      return;
+    }
     if (pathname === "/api/admin/products") {
       await handleAdminProducts(req, res);
       return;
@@ -767,14 +867,3 @@ createServer(async (req, res) => {
 }).listen(port, () => {
   console.log(`Solara Piscina IA rodando em http://localhost:${port}/000000`);
 });
-
-
-
-
-
-
-
-
-
-
-
